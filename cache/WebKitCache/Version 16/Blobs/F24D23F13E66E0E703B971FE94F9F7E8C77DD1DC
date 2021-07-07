@@ -1,0 +1,4074 @@
+/*!
+ * accounting.js v0.4.2, copyright 2014 Open Exchange Rates, MIT license, http://openexchangerates.github.io/accounting.js
+ */
+(function(p,z){function q(a){return!!(""===a||a&&a.charCodeAt&&a.substr)}function m(a){return u?u(a):"[object Array]"===v.call(a)}function r(a){return"[object Object]"===v.call(a)}function s(a,b){var d,a=a||{},b=b||{};for(d in b)b.hasOwnProperty(d)&&null==a[d]&&(a[d]=b[d]);return a}function j(a,b,d){var c=[],e,h;if(!a)return c;if(w&&a.map===w)return a.map(b,d);for(e=0,h=a.length;e<h;e++)c[e]=b.call(d,a[e],e,a);return c}function n(a,b){a=Math.round(Math.abs(a));return isNaN(a)?b:a}function x(a){var b=c.settings.currency.format;"function"===typeof a&&(a=a());return q(a)&&a.match("%v")?{pos:a,neg:a.replace("-","").replace("%v","-%v"),zero:a}:!a||!a.pos||!a.pos.match("%v")?!q(b)?b:c.settings.currency.format={pos:b,neg:b.replace("%v","-%v"),zero:b}:a}var c={version:"0.4.1",settings:{currency:{symbol:"$",format:"%s%v",decimal:".",thousand:",",precision:2,grouping:3},number:{precision:0,grouping:3,thousand:",",decimal:"."}}},w=Array.prototype.map,u=Array.isArray,v=Object.prototype.toString,o=c.unformat=c.parse=function(a,b){if(m(a))return j(a,function(a){return o(a,b)});a=a||0;if("number"===typeof a)return a;var b=b||".",c=RegExp("[^0-9-"+b+"]",["g"]),c=parseFloat((""+a).replace(/\((.*)\)/,"-$1").replace(c,"").replace(b,"."));return!isNaN(c)?c:0},y=c.toFixed=function(a,b){var b=n(b,c.settings.number.precision),d=Math.pow(10,b);return(Math.round(c.unformat(a)*d)/d).toFixed(b)},t=c.formatNumber=c.format=function(a,b,d,i){if(m(a))return j(a,function(a){return t(a,b,d,i)});var a=o(a),e=s(r(b)?b:{precision:b,thousand:d,decimal:i},c.settings.number),h=n(e.precision),f=0>a?"-":"",g=parseInt(y(Math.abs(a||0),h),10)+"",l=3<g.length?g.length%3:0;return f+(l?g.substr(0,l)+e.thousand:"")+g.substr(l).replace(/(\d{3})(?=\d)/g,"$1"+e.thousand)+(h?e.decimal+y(Math.abs(a),h).split(".")[1]:"")},A=c.formatMoney=function(a,b,d,i,e,h){if(m(a))return j(a,function(a){return A(a,b,d,i,e,h)});var a=o(a),f=s(r(b)?b:{symbol:b,precision:d,thousand:i,decimal:e,format:h},c.settings.currency),g=x(f.format);return(0<a?g.pos:0>a?g.neg:g.zero).replace("%s",f.symbol).replace("%v",t(Math.abs(a),n(f.precision),f.thousand,f.decimal))};c.formatColumn=function(a,b,d,i,e,h){if(!a)return[];var f=s(r(b)?b:{symbol:b,precision:d,thousand:i,decimal:e,format:h},c.settings.currency),g=x(f.format),l=g.pos.indexOf("%s")<g.pos.indexOf("%v")?!0:!1,k=0,a=j(a,function(a){if(m(a))return c.formatColumn(a,f);a=o(a);a=(0<a?g.pos:0>a?g.neg:g.zero).replace("%s",f.symbol).replace("%v",t(Math.abs(a),n(f.precision),f.thousand,f.decimal));if(a.length>k)k=a.length;return a});return j(a,function(a){return q(a)&&a.length<k?l?a.replace(f.symbol,f.symbol+Array(k-a.length+1).join(" ")):Array(k-a.length+1).join(" ")+a:a})};if("undefined"!==typeof exports){if("undefined"!==typeof module&&module.exports)exports=module.exports=c;exports.accounting=c}else"function"===typeof define&&define.amd?define([],function(){return c}):(c.noConflict=function(a){return function(){p.accounting=a;c.noConflict=z;return c}}(p.accounting),p.accounting=c)})(this);
+/*! lazysizes - v5.1.1 */
+!function(a,b){var c=b(a,a.document);a.lazySizes=c,"object"==typeof module&&module.exports&&(module.exports=c)}("undefined"!=typeof window?window:{},function(a,b){"use strict";var c,d;if(function(){var b,c={lazyClass:"lazyload",loadedClass:"lazyloaded",loadingClass:"lazyloading",preloadClass:"lazypreload",errorClass:"lazyerror",autosizesClass:"lazyautosizes",srcAttr:"data-src",srcsetAttr:"data-srcset",sizesAttr:"data-sizes",minSize:40,customMedia:{},init:!0,expFactor:1.5,hFac:.8,loadMode:2,loadHidden:!0,ricTimeout:0,throttleDelay:125};d=a.lazySizesConfig||a.lazysizesConfig||{};for(b in c)b in d||(d[b]=c[b])}(),!b||!b.getElementsByClassName)return{init:function(){},cfg:d,noSupport:!0};var e=b.documentElement,f=a.Date,g=a.HTMLPictureElement,h="addEventListener",i="getAttribute",j=a[h],k=a.setTimeout,l=a.requestAnimationFrame||k,m=a.requestIdleCallback,n=/^picture$/i,o=["load","error","lazyincluded","_lazyloaded"],p={},q=Array.prototype.forEach,r=function(a,b){return p[b]||(p[b]=new RegExp("(\\s|^)"+b+"(\\s|$)")),p[b].test(a[i]("class")||"")&&p[b]},s=function(a,b){r(a,b)||a.setAttribute("class",(a[i]("class")||"").trim()+" "+b)},t=function(a,b){var c;(c=r(a,b))&&a.setAttribute("class",(a[i]("class")||"").replace(c," "))},u=function(a,b,c){var d=c?h:"removeEventListener";c&&u(a,b),o.forEach(function(c){a[d](c,b)})},v=function(a,d,e,f,g){var h=b.createEvent("Event");return e||(e={}),e.instance=c,h.initEvent(d,!f,!g),h.detail=e,a.dispatchEvent(h),h},w=function(b,c){var e;!g&&(e=a.picturefill||d.pf)?(c&&c.src&&!b[i]("srcset")&&b.setAttribute("srcset",c.src),e({reevaluate:!0,elements:[b]})):c&&c.src&&(b.src=c.src)},x=function(a,b){return(getComputedStyle(a,null)||{})[b]},y=function(a,b,c){for(c=c||a.offsetWidth;c<d.minSize&&b&&!a._lazysizesWidth;)c=b.offsetWidth,b=b.parentNode;return c},z=function(){var a,c,d=[],e=[],f=d,g=function(){var b=f;for(f=d.length?e:d,a=!0,c=!1;b.length;)b.shift()();a=!1},h=function(d,e){a&&!e?d.apply(this,arguments):(f.push(d),c||(c=!0,(b.hidden?k:l)(g)))};return h._lsFlush=g,h}(),A=function(a,b){return b?function(){z(a)}:function(){var b=this,c=arguments;z(function(){a.apply(b,c)})}},B=function(a){var b,c=0,e=d.throttleDelay,g=d.ricTimeout,h=function(){b=!1,c=f.now(),a()},i=m&&g>49?function(){m(h,{timeout:g}),g!==d.ricTimeout&&(g=d.ricTimeout)}:A(function(){k(h)},!0);return function(a){var d;(a=!0===a)&&(g=33),b||(b=!0,d=e-(f.now()-c),d<0&&(d=0),a||d<9?i():k(i,d))}},C=function(a){var b,c,d=99,e=function(){b=null,a()},g=function(){var a=f.now()-c;a<d?k(g,d-a):(m||e)(e)};return function(){c=f.now(),b||(b=k(g,d))}},D=function(){var g,l,m,o,p,y,D,F,G,H,I,J,K=/^img$/i,L=/^iframe$/i,M="onscroll"in a&&!/(gle|ing)bot/.test(navigator.userAgent),N=0,O=0,P=0,Q=-1,R=function(a){P--,(!a||P<0||!a.target)&&(P=0)},S=function(a){return null==J&&(J="hidden"==x(b.body,"visibility")),J||"hidden"!=x(a.parentNode,"visibility")&&"hidden"!=x(a,"visibility")},T=function(a,c){var d,f=a,g=S(a);for(F-=c,I+=c,G-=c,H+=c;g&&(f=f.offsetParent)&&f!=b.body&&f!=e;)(g=(x(f,"opacity")||1)>0)&&"visible"!=x(f,"overflow")&&(d=f.getBoundingClientRect(),g=H>d.left&&G<d.right&&I>d.top-1&&F<d.bottom+1);return g},U=function(){var a,f,h,j,k,m,n,p,q,r,s,t,u=c.elements;if((o=d.loadMode)&&P<8&&(a=u.length)){for(f=0,Q++;f<a;f++)if(u[f]&&!u[f]._lazyRace)if(!M||c.prematureUnveil&&c.prematureUnveil(u[f]))aa(u[f]);else if((p=u[f][i]("data-expand"))&&(m=1*p)||(m=O),r||(r=!d.expand||d.expand<1?e.clientHeight>500&&e.clientWidth>500?500:370:d.expand,c._defEx=r,s=r*d.expFactor,t=d.hFac,J=null,O<s&&P<1&&Q>2&&o>2&&!b.hidden?(O=s,Q=0):O=o>1&&Q>1&&P<6?r:N),q!==m&&(y=innerWidth+m*t,D=innerHeight+m,n=-1*m,q=m),h=u[f].getBoundingClientRect(),(I=h.bottom)>=n&&(F=h.top)<=D&&(H=h.right)>=n*t&&(G=h.left)<=y&&(I||H||G||F)&&(d.loadHidden||S(u[f]))&&(l&&P<3&&!p&&(o<3||Q<4)||T(u[f],m))){if(aa(u[f]),k=!0,P>9)break}else!k&&l&&!j&&P<4&&Q<4&&o>2&&(g[0]||d.preloadAfterLoad)&&(g[0]||!p&&(I||H||G||F||"auto"!=u[f][i](d.sizesAttr)))&&(j=g[0]||u[f]);j&&!k&&aa(j)}},V=B(U),W=function(a){var b=a.target;if(b._lazyCache)return void delete b._lazyCache;R(a),s(b,d.loadedClass),t(b,d.loadingClass),u(b,Y),v(b,"lazyloaded")},X=A(W),Y=function(a){X({target:a.target})},Z=function(a,b){try{a.contentWindow.location.replace(b)}catch(c){a.src=b}},$=function(a){var b,c=a[i](d.srcsetAttr);(b=d.customMedia[a[i]("data-media")||a[i]("media")])&&a.setAttribute("media",b),c&&a.setAttribute("srcset",c)},_=A(function(a,b,c,e,f){var g,h,j,l,o,p;(o=v(a,"lazybeforeunveil",b)).defaultPrevented||(e&&(c?s(a,d.autosizesClass):a.setAttribute("sizes",e)),h=a[i](d.srcsetAttr),g=a[i](d.srcAttr),f&&(j=a.parentNode,l=j&&n.test(j.nodeName||"")),p=b.firesLoad||"src"in a&&(h||g||l),o={target:a},s(a,d.loadingClass),p&&(clearTimeout(m),m=k(R,2500),u(a,Y,!0)),l&&q.call(j.getElementsByTagName("source"),$),h?a.setAttribute("srcset",h):g&&!l&&(L.test(a.nodeName)?Z(a,g):a.src=g),f&&(h||l)&&w(a,{src:g})),a._lazyRace&&delete a._lazyRace,t(a,d.lazyClass),z(function(){var b=a.complete&&a.naturalWidth>1;p&&!b||(b&&s(a,"ls-is-cached"),W(o),a._lazyCache=!0,k(function(){"_lazyCache"in a&&delete a._lazyCache},9)),"lazy"==a.loading&&P--},!0)}),aa=function(a){if(!a._lazyRace){var b,c=K.test(a.nodeName),e=c&&(a[i](d.sizesAttr)||a[i]("sizes")),f="auto"==e;(!f&&l||!c||!a[i]("src")&&!a.srcset||a.complete||r(a,d.errorClass)||!r(a,d.lazyClass))&&(b=v(a,"lazyunveilread").detail,f&&E.updateElem(a,!0,a.offsetWidth),a._lazyRace=!0,P++,_(a,b,f,e,c))}},ba=C(function(){d.loadMode=3,V()}),ca=function(){3==d.loadMode&&(d.loadMode=2),ba()},da=function(){if(!l){if(f.now()-p<999)return void k(da,999);l=!0,d.loadMode=3,V(),j("scroll",ca,!0)}};return{_:function(){p=f.now(),c.elements=b.getElementsByClassName(d.lazyClass),g=b.getElementsByClassName(d.lazyClass+" "+d.preloadClass),j("scroll",V,!0),j("resize",V,!0),a.MutationObserver?new MutationObserver(V).observe(e,{childList:!0,subtree:!0,attributes:!0}):(e[h]("DOMNodeInserted",V,!0),e[h]("DOMAttrModified",V,!0),setInterval(V,999)),j("hashchange",V,!0),["focus","mouseover","click","load","transitionend","animationend"].forEach(function(a){b[h](a,V,!0)}),/d$|^c/.test(b.readyState)?da():(j("load",da),b[h]("DOMContentLoaded",V),k(da,2e4)),c.elements.length?(U(),z._lsFlush()):V()},checkElems:V,unveil:aa,_aLSL:ca}}(),E=function(){var a,c=A(function(a,b,c,d){var e,f,g;if(a._lazysizesWidth=d,d+="px",a.setAttribute("sizes",d),n.test(b.nodeName||""))for(e=b.getElementsByTagName("source"),f=0,g=e.length;f<g;f++)e[f].setAttribute("sizes",d);c.detail.dataAttr||w(a,c.detail)}),e=function(a,b,d){var e,f=a.parentNode;f&&(d=y(a,f,d),e=v(a,"lazybeforesizes",{width:d,dataAttr:!!b}),e.defaultPrevented||(d=e.detail.width)&&d!==a._lazysizesWidth&&c(a,f,e,d))},f=function(){var b,c=a.length;if(c)for(b=0;b<c;b++)e(a[b])},g=C(f);return{_:function(){a=b.getElementsByClassName(d.autosizesClass),j("resize",g)},checkElems:g,updateElem:e}}(),F=function(){!F.i&&b.getElementsByClassName&&(F.i=!0,E._(),D._())};return k(function(){d.init&&F()}),c={cfg:d,autoSizer:E,loader:D,init:F,uP:w,aC:s,rC:t,hC:r,fire:v,gW:y,rAF:z}});
+/*! lazysizes - v5.1.1 */
+!function(a,b){var c=function(){b(a.lazySizes),a.removeEventListener("lazyunveilread",c,!0)};b=b.bind(null,a,a.document),"object"==typeof module&&module.exports?b(require("lazysizes")):a.lazySizes?c():a.addEventListener("lazyunveilread",c,!0)}(window,function(a,b,c){"use strict";if(a.addEventListener){var d=c.cfg,e=/\s+/g,f=/\s*\|\s+|\s+\|\s*/g,g=/^(.+?)(?:\s+\[\s*(.+?)\s*\])(?:\s+\[\s*(.+?)\s*\])?$/,h=/^\s*\(*\s*type\s*:\s*(.+?)\s*\)*\s*$/,i=/\(|\)|'/,j={contain:1,cover:1},k=function(a){var b=c.gW(a,a.parentNode);return(!a._lazysizesWidth||b>a._lazysizesWidth)&&(a._lazysizesWidth=b),a._lazysizesWidth},l=function(a){var b;return b=(getComputedStyle(a)||{getPropertyValue:function(){}}).getPropertyValue("background-size"),!j[b]&&j[a.style.backgroundSize]&&(b=a.style.backgroundSize),b},m=function(a,b){if(b){var c=b.match(h);c&&c[1]?a.setAttribute("type",c[1]):a.setAttribute("media",d.customMedia[b]||b)}},n=function(a,c,h){var i=b.createElement("picture"),j=c.getAttribute(d.sizesAttr),k=c.getAttribute("data-ratio"),l=c.getAttribute("data-optimumx");c._lazybgset&&c._lazybgset.parentNode==c&&c.removeChild(c._lazybgset),Object.defineProperty(h,"_lazybgset",{value:c,writable:!0}),Object.defineProperty(c,"_lazybgset",{value:i,writable:!0}),a=a.replace(e," ").split(f),i.style.display="none",h.className=d.lazyClass,1!=a.length||j||(j="auto"),a.forEach(function(a){var c,e=b.createElement("source");j&&"auto"!=j&&e.setAttribute("sizes",j),(c=a.match(g))?(e.setAttribute(d.srcsetAttr,c[1]),m(e,c[2]),m(e,c[3])):e.setAttribute(d.srcsetAttr,a),i.appendChild(e)}),j&&(h.setAttribute(d.sizesAttr,j),c.removeAttribute(d.sizesAttr),c.removeAttribute("sizes")),l&&h.setAttribute("data-optimumx",l),k&&h.setAttribute("data-ratio",k),i.appendChild(h),c.appendChild(i)},o=function(a){if(a.target._lazybgset){var b=a.target,d=b._lazybgset,e=b.currentSrc||b.src;if(e){var f=c.fire(d,"bgsetproxy",{src:e,useSrc:i.test(e)?JSON.stringify(e):e});f.defaultPrevented||(d.style.backgroundImage="url("+f.detail.useSrc+")")}b._lazybgsetLoading&&(c.fire(d,"_lazyloaded",{},!1,!0),delete b._lazybgsetLoading)}};addEventListener("lazybeforeunveil",function(a){var d,e,f;!a.defaultPrevented&&(d=a.target.getAttribute("data-bgset"))&&(f=a.target,e=b.createElement("img"),e.alt="",e._lazybgsetLoading=!0,a.detail.firesLoad=!0,n(d,f,e),setTimeout(function(){c.loader.unveil(e),c.rAF(function(){c.fire(e,"_lazyloaded",{},!0,!0),e.complete&&o({target:e})})}))}),b.addEventListener("load",o,!0),a.addEventListener("lazybeforesizes",function(a){if(a.detail.instance==c&&a.target._lazybgset&&a.detail.dataAttr){var b=a.target._lazybgset,d=l(b);j[d]&&(a.target._lazysizesParentFit=d,c.rAF(function(){a.target.setAttribute("data-parent-fit",d),a.target._lazysizesParentFit&&delete a.target._lazysizesParentFit}))}},!0),b.documentElement.addEventListener("lazybeforesizes",function(a){!a.defaultPrevented&&a.target._lazybgset&&a.detail.instance==c&&(a.detail.width=k(a.target._lazybgset))})}});
+/*! lazysizes - v5.1.1 */
+if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
+	!function(a,b){var c=function(){b(a.lazySizes),a.removeEventListener("lazyunveilread",c,!0)};b=b.bind(null,a,a.document),"object"==typeof module&&module.exports?b(require("lazysizes")):a.lazySizes?c():a.addEventListener("lazyunveilread",c,!0)}(window,function(a,b,c){"use strict";function d(a,c){if(!g[a]){var d=b.createElement(c?"link":"script"),e=b.getElementsByTagName("script")[0];c?(d.rel="stylesheet",d.href=a):d.src=a,g[a]=!0,g[d.src||d.href]=!0,e.parentNode.insertBefore(d,e)}}var e,f,g={};b.addEventListener&&(f=/\(|\)|\s|'/,e=function(a,c){var d=b.createElement("img");d.onload=function(){d.onload=null,d.onerror=null,d=null,c()},d.onerror=d.onload,d.src=a,d&&d.complete&&d.onload&&d.onload()},addEventListener("lazybeforeunveil",function(a){if(a.detail.instance==c){var b,g,h,i;a.defaultPrevented||("none"==a.target.preload&&(a.target.preload="auto"),b=a.target.getAttribute("data-link"),b&&d(b,!0),b=a.target.getAttribute("data-script"),b&&d(b),b=a.target.getAttribute("data-require"),b&&(c.cfg.requireJs?c.cfg.requireJs([b]):d(b)),h=a.target.getAttribute("data-bg"),h&&(a.detail.firesLoad=!0,g=function(){a.target.style.backgroundImage="url("+(f.test(h)?JSON.stringify(h):h)+")",a.detail.firesLoad=!1,c.fire(a.target,"_lazyloaded",{},!0,!0)},e(h,g)),(i=a.target.getAttribute("data-poster"))&&(a.detail.firesLoad=!0,g=function(){a.target.poster=i,a.detail.firesLoad=!1,c.fire(a.target,"_lazyloaded",{},!0,!0)},e(i,g)))}},!1))});
+}
+/****************************** Start of Cookie  **********************************/
+var COOKIE_COUNTRY_CODE = "_country";
+var COOKIE_LANGUAGE_CODE = "_language";
+var COOKIE_ORIGIN_CODE = "_origin";
+var COOKIE_INFO_CODE = "_info";
+var COOKIE_ACK_CODE = "_cookienew";
+var COOKIE_SSO_CODE = "NEW_SAS_SSO_LOGGEDIN";
+var COOKIE_DARK_SITE = "_crisis";
+var COOKIE_PATH = "/";
+var COOKIE_USER_PERSISTENCE = 63072000;
+var COOKIE_SESSION_PERSISTENCE = 0;
+var COOKIE_OAUTH_TOKEN = "LOGIN_AUTH";
+var COOKIE_PROFILE_ID = "PROFILE_ID";
+var COOKIE_CUSTOMER_DNA="_dna";
+
+/** Setters **/
+
+function writeCookie(cookieName, cookieValue, cookiePersistence){
+
+    if(cookiePersistence === COOKIE_USER_PERSISTENCE){
+        document.cookie =
+            cookieName + "=" + encodeURIComponent(cookieValue) +
+            "; max-age=" + cookiePersistence +
+            "; path=/" ;
+    } else {
+                document.cookie =
+            cookieName + "=" + encodeURIComponent(cookieValue) +
+            "; path=/" ;
+    }
+}
+
+function writeLanguageCookie(languageCode) {
+
+}
+
+function writeCountryCookie(countryCode){
+
+}
+
+function writeOriginCookie(originCode){
+    writeCookie(COOKIE_ORIGIN_CODE, originCode, COOKIE_USER_PERSISTENCE);
+}
+
+function saveInfoCookie(){
+        writeCookie(COOKIE_INFO_CODE, "acknowledged", COOKIE_SESSION_PERSISTENCE);
+}
+
+function writeAckCookie(){
+    writeCookie(COOKIE_ACK_CODE, "acknowledged", COOKIE_USER_PERSISTENCE);
+}
+
+function writeDarkSiteCookie(){
+    writeCookie(COOKIE_DARK_SITE, "acknowledged", COOKIE_SESSION_PERSISTENCE);
+}
+
+function writeCustomerDNACookie(customerDNA){
+	writeCookie(COOKIE_CUSTOMER_DNA, customerDNA, COOKIE_USER_PERSISTENCE);
+}
+
+function getCountryCookie() {
+    return (get_cookie(COOKIE_COUNTRY_CODE));
+}
+
+function getLanguageCookie() {
+    return (get_cookie(COOKIE_LANGUAGE_CODE));
+}
+
+function getOriginCookie() {
+    var cookie_string = get_cookie(COOKIE_ORIGIN_CODE);
+	// Added for backward compat: because user may disallow cookie
+    if(cookie_string == null) {
+		cookie_string = $(".countryName").attr("data-org-code");
+    }
+
+    return cookie_string;
+}
+function getInfoCookie() {
+    return (get_cookie(COOKIE_INFO_CODE));
+}
+
+function getAckCookie() {
+    return (get_cookie(COOKIE_ACK_CODE));
+}
+
+function getSSOCookie() {
+    return (get_cookie(COOKIE_SSO_CODE));
+}
+
+function getDarkSiteCookie() {
+    return (get_cookie(COOKIE_DARK_SITE));
+}
+
+function getOAuthCookie(){
+    return (get_cookie(COOKIE_OAUTH_TOKEN));
+}
+
+function getProfileCookie() {
+    return (get_cookie(COOKIE_PROFILE_ID));
+}
+
+function  getCustomerDNACookie(){
+    return (get_cookie(COOKIE_CUSTOMER_DNA));
+}
+
+function get_cookie ( cookie_name ){
+        var re = new RegExp(cookie_name + "=([^;]+)");
+            var value = re.exec(document.cookie);
+            return (value != null) ? unescape(value[1]) : null;
+}
+/****************************** End of Cookie  **********************************/
+
+var defaultOriginCode = null;
+var defaultCountryCode = getCountryCode();
+
+if(defaultCountryCode == null || defaultCountryCode == "" || defaultCountryCode == undefined) {
+	var newURL = window.location.host;
+	var countryarry = window.location.pathname.split('/');
+	var lowerEnvironment = countryarry[1];
+	
+	switch(true) {
+		case newURL.indexOf("sas.no") > -1 || lowerEnvironment.indexOf("no-") > -1 || countryarry[2] === "flysas-no":
+			defaultOriginCode = 'OSL';
+			break;
+		case newURL.indexOf("sas.dk") > -1 || lowerEnvironment.indexOf("dk-") > -1 || countryarry[2] === "flysas-dk":
+			defaultOriginCode = 'CPH';
+			break;
+		case newURL.indexOf("sas.se") > -1 || lowerEnvironment.indexOf("se-") > -1 || countryarry[2] === "flysas-se":
+			defaultOriginCode = 'ARN';
+			break;
+		case newURL.indexOf("sas.fi") > -1 || lowerEnvironment.indexOf("fi-") > -1 || countryarry[2] === "flysas-fi":
+			defaultOriginCode = 'HEL';
+			break;
+	}
+} else {
+	switch(defaultCountryCode) {
+		case "NO":
+			defaultOriginCode = 'OSL';
+			break;
+		case "DK":
+			defaultOriginCode = 'CPH';
+			break;
+		case "SE":
+			defaultOriginCode = 'ARN';
+			break;
+		case "FI":
+			defaultOriginCode = 'HEL';
+			break;
+		case "AU":
+			defaultOriginCode = 'SYD';
+			break;
+		case "AT":
+			defaultOriginCode = 'VIE';
+			break;
+		case "BE":
+			defaultOriginCode = 'BRU';
+			break;
+		case "CN":
+			defaultOriginCode = 'BJS';
+			break;
+		case "FR":
+			defaultOriginCode = 'CDG';
+			break;
+		case "DE":
+			defaultOriginCode = 'FRA';
+			break;
+		case "HK":
+			defaultOriginCode = 'HKG';
+			break;
+		case "IS":
+			defaultOriginCode = 'KEF';
+			break;
+		case "IE":
+			defaultOriginCode = 'DUB';
+			break;
+		case "IT":
+			defaultOriginCode = 'LIN';
+			break;
+		case "JP":
+			defaultOriginCode = 'NRT';
+			break;
+		case "LT":
+			defaultOriginCode = 'VNO';
+			break;
+		case "NL":
+			defaultOriginCode = 'AMS';
+			break;
+		case "PL":
+			defaultOriginCode = 'WAW';
+			break;
+		case "RU":
+			defaultOriginCode = 'LED';
+			break;
+		case "SG":
+			defaultOriginCode = 'SIN';
+			break;
+		case "ES":
+			defaultOriginCode = 'BCN';
+			break;
+		case "CH":
+			defaultOriginCode = 'ZRH';
+			break;
+		case "TH":
+			defaultOriginCode = 'BKK';
+			break;
+		case "GB":
+			defaultOriginCode = 'LHR';
+			break;
+		case "US":
+			defaultOriginCode = 'EWR';
+			break;
+		case "LU":
+			defaultOriginCode = 'TXL';
+			break;
+	}
+}
+
+/*** Start of marketing top banner **/
+Granite.I18n.setLocale(getLocale());
+
+function loadTopBanners(){
+//$( document ).on("loadCMS", function( event ) {
+    $(".annotate-info .tool-tip .tool-tip-inner").hide();
+    topBannerObj.initTopBanner();
+    topBannerObj.initImages();
+    topBannerObj.initFlashElem();
+
+    /*$( window ).resize(function() {
+        topBannerObj.initImages();
+    });*/
+ }
+
+
+var topBannerObj = {
+
+    initTopBanner : function(){
+
+    	$(".top-banner-wrapper-link").each(function() {
+    		if($(this).text() === ""){
+		    	var container = $(this).parent().find('.banner-wrapper')
+	        	if(container && container.length > 0){
+	        		$(this).append(container[0]);
+	        		$(this).height($(this).parent().height());
+	        		$(this).css('display','block')
+	        	}
+    		}
+    	});
+
+        $(".banner-wrapper").each(function() {
+
+			//To disable banner
+           /* if($(this).attr("data-display")){
+                $(this).closest(".topBanner").addClass("hide-banner");               
+            } else {
+                $(this).show();
+            }*/
+            //Resize to mobile for large banners
+            if ($(window).width() <= 767) {
+                if($(this).find(".multiple-destination-campaign").length > 0){
+                    this.realignCampaignsForMobile($(this).find('.large-banner-h')); 
+                }
+            }
+
+
+
+        });
+
+        /******************************For Banner titles in H1.. h4 **************************************/
+        /* $(".banner-wrapper h1, .banner-wrapper h2, .banner-wrapper h3, .banner-wrapper h4").each( function( ) {
+            var bannerDiv = $(this).closest(".banner-wrapper");
+            var bkColor = bannerDiv.attr("data-highlight-color");
+
+            if(bkColor != null && bkColor != ""){
+                $(this).addClass(bkColor);
+            } 
+        });
+
+        this.registerEvents();
+    },*/
+	
+         $(".banner-wrapper h1, .banner-wrapper h2, .banner-wrapper h3, .banner-wrapper h4, .banner-wrapper p").each( function( ) {
+            var closestBanner = $(this).closest(".banner-wrapper");
+            var bkColor = closestBanner.attr("data-highlight-color");
+           
+			if(bkColor != null && bkColor !== ""){
+				$(this).addClass(bkColor);
+				$(this).addClass("text-white");
+				closestBanner.find("div.text").addClass("head-highlight");
+				closestBanner.find(".single-destination-hero-campaign").addClass("head-highlight");
+
+			} 
+
+             //accessibility
+            if(!$(this).attr('aria-label')){
+                $(this).attr('aria-label',$(this).text().trim());
+            }
+        });
+
+		/*var bannerBgColor = $(".top-home-banner .banner-wrapper").attr('data-highlight-color');
+		var heroComp = $(".top-home-banner .banner-wrapper .banner-inner-middle-content .single-destination-hero-campaign");
+		if(heroComp && heroComp.length > 0 && bannerBgColor && bannerBgColor !="" && heroComp[0].className.indexOf("head-highlight") < 0){
+			heroComp.addClass("head-highlight");
+		}
+*/
+        this.registerEvents();
+    },
+
+    realignCampaignsForMobile : function(largeBannerObj) {
+
+        var xHeight = largeBannerObj.height();
+
+        largeBannerObj.after( "" );
+
+        var closestSwatch = largeBannerObj.closest(".banner-container");
+    },
+
+    /******************************For ToolTip**************************************/
+
+    registerEvents : function() {
+        $(".annotate-info .pull-left").on('click',this.showTooltip);
+        $(".tool-tip-inner .icon-close-grey").on('click',this.hideTooltip);
+    },
+
+    showTooltip : function(event){
+        var target = $(event.currentTarget);
+        target.closest(".annotate-info").find(".tool-tip .tool-tip-inner").show();
+
+    },
+
+    hideTooltip : function(event){
+        var target = $(event.currentTarget).parent().hide();
+    },
+
+
+    initImages : function() {
+        var viewportWidth = $( window ).width();
+
+        $( ".large-banner .inner" ).each(function(index) {
+
+            viewportWidth = $( this ).width();
+            var imageUrl = $( this ).attr("data-image-first-part");
+
+            if(!imageUrl){
+				return;
+            }
+            if($( this ).attr("data-image-second-part") === undefined || $( this ).attr("data-image-second-part") == null
+                || $( this ).attr("data-image-second-part") === "") {
+            }    else {
+                imageUrl += ".img.";
+                if(viewportWidth < 320) {
+                    imageUrl += "320.low." + $( this ).attr("data-image-second-part");
+                } else if(viewportWidth < 768) {
+                    imageUrl += "768.medium." + $( this ).attr("data-image-second-part");
+                } else {
+                    imageUrl += "1120.medium." + $( this ).attr("data-image-second-part");
+                }
+            }
+
+            /* if($(this).css('background-image') === 'none'){
+			    $(".banner-wrapper h1, .banner-wrapper h2, .banner-wrapper h3, .banner-wrapper h4").each( function( ) {
+                $(this).addClass("text-white");
+       		 });
+        	} */
+
+                /*if($(window).width() <= 767 && ( 
+                   ($(this).find(".large-banner").next() != null && $(this).find(".large-banner").next().hasClass("campaign-wrap")) ||
+                    ($(this).find(".large-banner .multiple-destination-campaign").length > 0)
+                )){
+                    //$( this ).css("background-position","50% 0%");
+                } else {
+                    //$( this ).css("background-position","50% 50%");
+                }    */
+
+                if($(this).css('background-image') === 'none'){
+                    $( this ).css("background-image","url('" + imageUrl + "')");
+                    $( this ).css("background-size", "cover");
+            		$( this ).css("background-position", "50% 50%");
+                }
+
+        });
+
+
+    },
+
+    initFlashElem : function() {
+
+        /*$(".teaser-flash .notimer").each(function() {
+            $(this).closest('.teaser-flash').css("display", "table");
+        });*/
+        var thisObj = this;
+        $(".teaser-flash .timer").each(function() {
+
+            var currObj = $(this);
+
+            var expDateTime = $(this).attr("data-expDateTime");
+            var expDate;
+            var expTime;
+			if(expDateTime !== undefined && expDateTime != null) {
+				expDate = expDateTime.substring(0, expDateTime.indexOf(" "));
+				expTime = expDateTime.substring(expDateTime.indexOf(" ")+1);
+
+
+				var blockDays = $(this).attr("data-blockDays");
+				var blockHours = $(this).attr("data-blockHours");
+				var blockMinutes = $(this).attr("data-blockMinutes");
+				var blockSeconds = $(this).attr("data-blockSeconds");
+
+
+				var hours = Number(expTime.match(/^(\d+)/)[1]);
+				var minutes = Number(expTime.match(/:(\d+)/)[1]);
+				var AMPM = expTime.match(/\s(.*)$/)[1];
+
+				if(AMPM === "PM" && hours<12) 
+					hours = hours+12;
+				if(AMPM === "AM" && hours===12) 
+					hours = hours-12;
+
+				var sHours = hours.toString();
+				var sMinutes = minutes.toString();
+
+				if(hours<10) 
+					sHours = "0" + sHours;
+				if(minutes<10) 
+					sMinutes = "0" + sMinutes;
+				var timeStr = sHours + ":" + sMinutes;  
+
+				var date_future_client_time;
+				if(expDate === undefined) {
+
+					date_future_client_time = new Date();
+				} else {
+
+					var mmddyyFormat =  /(\d{1,2})\/(\d{1,2})\/(\d{2})$/;
+					if(mmddyyFormat.test(expDate)){
+						var match = mmddyyFormat.exec(expDate);
+						var dateStr = '20' + match[3] + '-' + match[1] + '-' + match[2];
+
+						date_future_client_time = new Date(dateStr + 'T' + timeStr + 'Z');
+					} else {
+
+						date_future_client_time = new Date(expDate);
+					}
+				}
+
+				var date_future_utc_time = thisObj.createDateAsUTC(date_future_client_time);
+
+				var date_future = date_future_utc_time.getTime();
+
+				var date_now_client_time = new Date();
+
+				var date_now_utc_time = thisObj.convertDateToUTC(date_now_client_time);
+
+				var date_now = date_now_client_time.getTime();
+
+				var calculateCountDown = setInterval(function() {
+
+					if (date_future > date_now) {
+
+						seconds = Math.floor((date_future - (date_now)) / 1000);
+						minutes = Math.floor(seconds / 60);
+						hours = Math.floor(minutes / 60);
+						days = Math.floor(hours / 24);
+
+						hours = hours - (days * 24);
+						minutes = minutes - (days * 24 * 60) - (hours * 60);
+						seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
+
+						if (days < 10) {
+							days = "0" + days;
+						}
+						if (hours < 10) {
+							hours = "0" + hours;
+						}
+						if (minutes < 10) {
+							minutes = "0" + minutes;
+						}
+
+						if (seconds < 10) {
+							seconds = "0" + seconds;
+						}
+
+
+						if (blockDays === "true") {
+
+							if (blockHours === "true") {
+
+								if (blockMinutes === "true") {
+
+									if (blockSeconds === "true") {
+
+									} else {
+										currObj.text(seconds);
+									}
+
+								} else if (blockSeconds === "true") {
+									currObj.text(minutes);
+								} else {
+
+									currObj.text(minutes + " : " + seconds);
+
+								}
+
+
+							} else if (blockMinutes === "true") {
+								if (blockSeconds === "true") {
+									currObj.text(hours);
+								} else {
+									currObj.text(hours + " : " + seconds);
+								}
+
+							} else if (blockSeconds === "true") {
+
+								currObj.text(hours + " : " + minutes);
+
+							} else {
+								currObj.text(hours + " : " + minutes + " : " + seconds);
+							}
+						} else if (blockHours === "true") {
+
+							if (blockMinutes === "true") {
+
+								if (blockSeconds === "true") {
+									currObj.text(days);
+								} else {
+									currObj.text(days + " : " + seconds);
+								}
+							} else if (blockSeconds === "true") {
+								currObj.text(days + " : " + minutes);
+							} else {
+								currObj.text(days + " : " + minutes + " : " + seconds);
+							}
+						} else if (blockMinutes === "true") {
+
+							if (blockSeconds === "true") {
+								currObj.text(days + " : " + hours);
+							} else {
+								currObj.text(days + " : " + hours + " : " + seconds);
+							}
+
+						} else if (blockSeconds === "true") {
+
+							currObj.text(days + " : " + hours + " : " + minutes);
+						} else {
+							currObj.text(days + " : " + hours + " : " + minutes + " : " + seconds);
+						}
+
+                    //accessibility
+                    currObj.attr('aria-label', currObj.text());
+
+						currObj.closest('.teaser-flash').css("display", "table");
+					} else {
+						currObj.closest('.teaser-flash').hide();
+
+						clearInterval(calculateCountDown);
+						return;
+					}
+
+					date_now = date_now + 1000;
+				}, 1000);
+			}
+
+        });
+
+    },
+
+
+    /** Date based utility **/
+
+    createDateAsUTC : function(date) {
+        // Returns a UTC date created using literal year,month,day.. values of another date object
+        return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+    },
+
+    convertDateToUTC : function(date) { 
+        // Returns the UTC equivalent date-time of the current date object
+        return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()); 
+    }
+
+    /** End of Date based utility **/
+
+};
+//if(!CQ || !CQ.WCM || !(CQ.WCM.isEditMode(true) || CQ.WCM.isDesignMode(true))){
+//loadTopBanners();
+//}
+
+/*** Start of marketing banner **/
+var isEditMode = false;
+var authoringMode = get_cookie('cq-authoring-mode');
+if(authoringMode === 'CLASSIC') {
+    if(!(typeof CQ === "undefined")) {
+		if(!(typeof CQ.WCM === "undefined")) {
+			if (CQ.WCM.isEditMode(true) || CQ.WCM.isDesignMode(true)){
+				isEditMode = true;
+			}
+		}
+    }
+} else if(authoringMode === 'TOUCH') {
+    if(get_cookie('wcmmode') === "edit") {
+        isEditMode = true;
+    }
+}
+if(isEditMode) {
+    var countryarry = window.location.pathname.split('/');
+    if(countryarry[2]==="flysas-no"){
+        writeOriginCookie('OSL');
+    }
+    else if(countryarry[2]==="flysas-dk"){
+        writeOriginCookie('CPH');
+    }
+    else if(countryarry[2]==="flysas-se"){
+        writeOriginCookie('ARN');
+    }
+}
+function loadBanners(){
+	$(".annotate-info .tool-tip .tool-tip-inner").hide();
+    bannerObj.initBanners();
+    bannerObj.initImages();
+    bannerObj.initFlashElem();
+
+}
+
+var bannerObj = {
+
+    initBanners : function(){
+        $(".banner-wrapper").each( function() {
+			//To disable banner
+
+            var parent1 = $(this).parent();
+            	//accessibility
+                if($(this).hasClass('link') && $(this).find('a .btn').length <0){
+                    $(this).find('a').attr('aria-label',$(this).find('a').text().trim());
+                }
+        //}
+
+        	if($(this).is('.link')){
+        		$(this).find('a.anchor-wrapper-parent').append($(this).find('.anchor-wrapper'))
+        	}
+
+        });
+
+        /******************************For Banner titles in H1.. h4 **************************************/
+
+        $(".banner-wrapper .anchor-wrapper h1, .banner-wrapper .anchor-wrapper h2, .banner-wrapper .anchor-wrapper h3:not(.noStyle), .banner-wrapper .anchor-wrapper h4, .banner-wrapper .anchor-wrapper p").each( function( ) {
+            var closestBanner = $(this).closest(".banner-wrapper");
+            var bkColor = closestBanner.attr("data-highlight-color");
+
+            if(bkColor != null && bkColor !== ""){
+                $(this).addClass(bkColor);
+                $(this).addClass("text-white");
+                closestBanner.find("div.text").addClass("head-highlight");
+                closestBanner.find(".single-destination-hero-campaign").addClass("head-highlight");
+                closestBanner.find(".single-destination-campaign").addClass("head-highlight");
+            }
+			//accessibility
+            if(!$(this).attr('aria-label') && !closestBanner.hasClass('link')){
+				$(this).attr('aria-label',$(this).text().trim());
+            }
+        });
+
+        this.registerEvents();
+
+    },
+
+
+    /******************************For ToolTip**************************************/
+
+    registerEvents : function() {
+        $(".annotate-info .pull-left").on('click',this.showTooltip);
+        $(".tool-tip-inner .icon-close-grey").on('click',this.hideTooltip);
+    },
+
+    showTooltip : function(event){
+        var target = $(event.currentTarget);
+        target.closest(".annotate-info").find(".tool-tip .tool-tip-inner").show();
+
+    },
+
+    hideTooltip : function(event){
+        var target = $(event.currentTarget).parent().hide();
+    },
+
+    initImages : function() {
+        var viewportWidth = $( window ).width();
+
+        $( ".banner-container" ).each(function(index) {
+
+            viewportWidth = $( this ).width();
+            var imageUrl = $( this ).attr("data-image-first-part");
+			if (!imageUrl) {
+				return;
+			}
+            if($( this ).attr("data-image-second-part") === undefined || $( this ).attr("data-image-second-part") === null
+                || $( this ).attr("data-image-second-part") === "") {
+            }    else {
+                imageUrl += ".img.";
+                if(viewportWidth < 320) {
+                    imageUrl += "320.low." + $( this ).attr("data-image-second-part");
+                } else if(viewportWidth < 768) {
+                    imageUrl += "768.medium." + $( this ).attr("data-image-second-part");
+                } else {
+                    imageUrl += "full.medium." + $( this ).attr("data-image-second-part");
+                }
+            }
+
+            if($(this).css('background-image') === 'none'){
+				$( this ).css("background-image","url('" + imageUrl + "')");
+                $( this ).css("background-size", "cover");
+            	$( this ).css("background-position", "50% 50%");
+			}
+
+        });
+
+    },
+	
+    initFlashElem : function() {
+
+       var thisObj = this;
+        $(".teaser-flash .timer").each(function() {
+
+            var currObj = $(this);
+
+            var expDateTime = $(this).attr("data-expiryDateTime");
+            var expDate;
+            var expTime;
+			if(expDateTime !== null && expDateTime !== undefined) {
+				expDate = expDateTime.substring(0, expDateTime.indexOf(" "));
+				expTime = expDateTime.substring(expDateTime.indexOf(" ")+1);
+
+				var blockDays = $(this).attr("data-blockDays");
+				var blockHours = $(this).attr("data-blockHours");
+				var blockMinutes = $(this).attr("data-blockMinutes");
+				var blockSeconds = $(this).attr("data-blockSeconds");
+
+
+				var hours = Number(expTime.match(/^(\d+)/)[1]);
+				var minutes = Number(expTime.match(/:(\d+)/)[1]);
+				var AMPM = expTime.match(/\s(.*)$/)[1];
+
+				if(AMPM === "PM" && hours<12)
+					hours = hours+12;
+				if(AMPM === "AM" && hours===12)
+					hours = hours-12;
+
+				var sHours = hours.toString();
+				var sMinutes = minutes.toString();
+
+				if(hours<10)
+					sHours = "0" + sHours;
+				if(minutes<10)
+					sMinutes = "0" + sMinutes;
+				var timeStr = sHours + ":" + sMinutes;
+
+				var date_future_client_time;
+				if(expDate === undefined) {
+
+					date_future_client_time = new Date();
+				} else {
+
+					var mmddyyFormat =  /(\d{1,2})\/(\d{1,2})\/(\d{2})$/;
+					if(mmddyyFormat.test(expDate)){
+						var match = mmddyyFormat.exec(expDate);
+						var dateStr = '20' + match[3] + '-' + match[1] + '-' + match[2];
+
+						date_future_client_time = new Date(dateStr + 'T' + timeStr + 'Z');
+					} else {
+
+						date_future_client_time = new Date(expDate);
+					}
+				}
+
+				var date_future_utc_time = thisObj.createDateAsUTC(date_future_client_time);
+
+				var date_future = date_future_utc_time.getTime();
+
+				var date_now_client_time = new Date();
+
+				var date_now_utc_time = thisObj.convertDateToUTC(date_now_client_time);
+
+				var date_now = date_now_client_time.getTime();
+
+				var calculateCountDown = setInterval(function() {
+
+					if (date_future > date_now) {
+
+						var seconds = Math.floor((date_future - (date_now)) / 1000);
+						minutes = Math.floor(seconds / 60);
+						hours = Math.floor(minutes / 60);
+						var days = Math.floor(hours / 24);
+
+						hours = hours - (days * 24);
+						minutes = minutes - (days * 24 * 60) - (hours * 60);
+						seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
+
+						if (days < 10) {
+							days = "0" + days;
+						}
+						if (hours < 10) {
+							hours = "0" + hours;
+						}
+						if (minutes < 10) {
+							minutes = "0" + minutes;
+						}
+
+						if (seconds < 10) {
+							seconds = "0" + seconds;
+						}
+
+
+						if (blockDays === "true") {
+
+							if (blockHours === "true") {
+
+								if (blockMinutes === "true") {
+
+									if (blockSeconds === "true") {
+
+									} else {
+										currObj.text(seconds);
+									}
+
+								} else if (blockSeconds === "true") {
+									currObj.text(minutes);
+								} else {
+
+									currObj.text(minutes + " : " + seconds);
+
+								}
+
+
+							} else if (blockMinutes === "true") {
+								if (blockSeconds === "true") {
+									currObj.text(hours);
+								} else {
+									currObj.text(hours + " : " + seconds);
+								}
+
+							} else if (blockSeconds === "true") {
+
+								currObj.text(hours + " : " + minutes);
+
+							} else {
+								currObj.text(hours + " : " + minutes + " : " + seconds);
+							}
+						} else if (blockHours === "true") {
+
+							if (blockMinutes === "true") {
+
+								if (blockSeconds === "true") {
+									currObj.text(days);
+								} else {
+									currObj.text(days + " : " + seconds);
+								}
+							} else if (blockSeconds === "true") {
+								currObj.text(days + " : " + minutes);
+							} else {
+								currObj.text(days + " : " + minutes + " : " + seconds);
+							}
+						} else if (blockMinutes === "true") {
+
+							if (blockSeconds === "true") {
+								currObj.text(days + " : " + hours);
+							} else {
+								currObj.text(days + " : " + hours + " : " + seconds);
+							}
+
+						} else if (blockSeconds === "true") {
+
+							currObj.text(days + " : " + hours + " : " + minutes);
+						} else {
+							currObj.text(days + " : " + hours + " : " + minutes + " : " + seconds);
+						}
+
+
+						currObj.closest('.teaser-flash').css("display", "table");
+					} else {
+						currObj.closest('.teaser-flash').hide();
+
+						clearInterval(calculateCountDown);
+						return;
+					}
+
+					date_now = date_now + 1000;
+				}, 1000);
+			}
+
+        });
+
+    },
+
+
+    /** Date based utility **/
+
+    createDateAsUTC : function(date) {
+        // Returns a UTC date created using literal year,month,day.. values of another date object
+        return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+    },
+
+    convertDateToUTC : function(date) {
+        // Returns the UTC equivalent date-time of the current date object
+        return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+    }
+
+    /** End of Date based utility **/
+
+};
+
+
+
+$(document).on("loadPersonalizeComp", function(event) {
+	loadBanners();
+    initMultiDesti();
+    initSingleHero();
+    initSingleDesti();
+});
+
+var docOnReadyCampaignCalled = true;
+$(document).ready(function() {
+    if(docOnReadyCampaignCalled){
+        if(typeof updateAttrFromTarget != "undefined"){ /*function used for attributes update from TARGET*/
+            updateAttrFromTarget();
+        }
+    	if(window.loadBanners)loadBanners();
+        if(window.initMultiDesti)initMultiDesti();
+        if(window.initSingleHero)initSingleHero();
+        if(window.initSingleDesti)initSingleDesti();
+        docOnReadyCampaignCalled = false;
+    }
+});
+
+function triggerOriginChange() {
+    $(document).trigger( "originChange");
+}
+
+function getFormattedDateForApi(d) {
+    var formattedDate = d.getFullYear() + '' + pad(d.getMonth() + 1) + '' + pad(d.getDate());
+    return formattedDate.concat("0000");
+}
+
+function pad(s) {
+    return (s < 10) ? '0' + s : s;
+}
+
+function getFormattedDateForUI(dateStr){
+    if(dateStr == null){
+        return null;
+    }
+    var date = new Date(dateStr);
+    var str = date.getFullYear().toString() + (date.getMonth() + 1 < 10 ? ("0" + (date.getMonth() + 1)) : date.getMonth() + 1).toString() + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate()).toString();
+    return str;
+}
+
+function onCampaignClick(param, event){
+
+    var org = param.getAttribute("data-attr-org");
+    var dest = param.getAttribute("data-attr-dest");
+    var type = param.getAttribute("data-attr-type");
+    var outbound = param.getAttribute("data-attr-outbound");
+    var inbound = param.getAttribute("data-attr-inbound");
+	var wifiEnabled = param.getAttribute("data-attr-wifi-enable");
+	var wifiPath = param.getAttribute("data-attr-wifi-path");
+    if(inbound === "undefined" || inbound === null){
+        var outDate = new Date(outbound);
+        var inDate = new Date(outbound);
+        inDate.setDate(outDate.getDate() + 7);
+		inbound = inDate.getFullYear() + '-' + pad(inDate.getMonth() + 1) + '-' + pad(inDate.getDate()) + 'T00:00:00.000Z';
+    }
+
+    if(wifiEnabled === "undefined" || wifiEnabled === null){
+        var tripType = 'RT';
+		window.location.href = "/lowpricecalendar?search=" + tripType + "_" + org + "-" + dest + "-" + getFormattedDateForUI(outbound) + "-" + getFormattedDateForUI(inbound) + "_a1c0i0y0_REV";
+    } else if(wifiEnabled === "true" && type === "O") {
+        var tripType = 'OW';
+         window.location.href = wifiPath + "?search=" + tripType + "_" + org + "-" + dest + "-" + getFormattedDateForUI(outbound) + "_a1c0i0y0_revenue";
+    } else if(wifiEnabled === "true" && type === "R") {
+        var tripType = 'RT';
+         window.location.href = wifiPath + "?search=" + tripType + "_" + org + "-" + dest + "-" + getFormattedDateForUI(outbound) + "-" + getFormattedDateForUI(inbound) + "_a1c0i0y0_revenue";
+    }
+}
+
+function handleCampaignKeyPress(param, event){
+    if(event && event.charCode === 13){
+        onCampaignClick(param, event);
+    }
+}
+/* -------- Start of Multiple Destination Campaign -------- */
+
+$(document).on("originChange", function(event, newOriginCode) {
+	initMultiDesti(newOriginCode); //calling initMultiDesti funtion
+});
+
+function initMultiDesti(newOriginCode) { //declaring initMultiDesti funtion
+    var sliderVal = newOriginCode;
+
+    $(".multiple-destination-campaign").each(function() {
+
+        var currObj = $(this).find(".destination-details");
+
+        if(sliderVal !== "slider" || (sliderVal === "slider" && currObj.find('.temp-range').attr("data-reload") === "true")){
+
+            if(sliderVal === "slider"){
+                currObj.find('.temp-range').attr("data-reload","false");
+                newOriginCode = "";
+            }
+
+            var API_OFFERS_LOWPRICE = "offers/flightproduct/lowestFare"; // lpc url
+            var baseURL = getApiHost() + API_OFFERS_LOWPRICE;
+            var localeHeader = getLanguageCode() + '_'+ getCountryCode();
+
+            var origName = currObj.attr("data-origName") || newOriginCode || getOriginCookie() || defaultOriginCode;
+
+            var destName = currObj.attr("data-destName");
+            var tripType = currObj.attr("data-tripType");
+
+			var isWifiEnabled = currObj.attr("data-wifi-enable");
+			var wifiPath = currObj.attr("data-wifi-path");
+
+            var pos = getPOS();
+
+            var today = new Date(new Date().getTime() + (1000 * 60 * 60 * 6))
+            var x = currObj.attr("data-startDate");
+            var startDate;
+            if(x === undefined || x==="") {
+                startDate = today;
+            }else{
+                startDate = formatDialogDate(x);
+                if(startDate < today) {
+                    startDate = today;
+                }
+            }
+            var formatStartDate = getFormattedDateForApi(startDate);
+
+            var y = currObj.attr("data-endDate");
+            var endDate;
+            if(y === undefined || y==="") {
+                endDate = new Date(startDate);
+            } else{
+                endDate = formatDialogDate(y);
+            }
+            if(endDate <= startDate) {
+                endDate.setDate(startDate.getDate() + 90);
+            }
+            var formatEndDate = getFormattedDateForApi(endDate);
+
+            currObj.hide();
+
+            if(currObj.attr("data-enable-tempbar")){
+                destName = getDestFromSlider(currObj, sliderVal);
+            }
+
+
+            if(origName && destName && tripType){
+
+                var reqData = {
+                        "from": origName,
+                        "to": destName,
+                        "startDate": formatStartDate,
+                        "endDate": formatEndDate,
+                        "paxType": "ADT",
+                        "displayType": "DAY",
+                        "pos": pos,
+                        "tripType": tripType
+                    };
+
+                if(isWifiEnabled){
+                    reqData["cepId"] = pos+"_INAIR";
+                }
+
+                $.ajax({
+                    url: baseURL,
+                    data: reqData ,
+                    beforeSend: function (jqXHR, settings) {
+                        jqXHR.setRequestHeader('Accept-Language', localeHeader);
+                    },
+                    success: function(data, textStatus, jqXHR) {
+                        multiDestinationCampaignSuccess(data, currObj);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log("Multiple destinations : Error fetching data : "+errorThrown);
+                    }
+                });
+            } else {
+                if(currObj.attr("data-enable-tempbar")){
+                    var items = "<tr><td colspan='2' style='text-align: center;'>No Destinations Available</td></tr>";
+                    currObj.find('tbody').empty().append(items);
+                    currObj.show();
+                    if(currObj.attr("data-enable-tempbar")){
+                        var mediumBanner = currObj.closest('.medium-banner');
+                        var tempRange = mediumBanner.find(".temp-range");
+                        var marginVal = mediumBanner.find('.inner').height() - mediumBanner.find('table').height() - tempRange.outerHeight();
+                        tempRange.css('margin-bottom', marginVal);
+                    }
+                }
+            }
+        }
+    });
+}
+
+function formatDialogDate(x){
+    var formattedDate = "";
+    var mmddyyFormat =  /(\d{1,2})\/(\d{1,2})\/(\d{2})$/;
+    if(mmddyyFormat.test(x)){
+        var match = mmddyyFormat.exec(x);
+        var dateStr = '20' + match[3] + '-' + match[1] + '-' + match[2];
+        formattedDate = new Date(dateStr);
+    }
+    else {
+        formattedDate = new Date(x);
+    }
+
+    return formattedDate;
+}
+
+function getDestFromSlider(currObj, sliderVal){
+    var destName = "";
+    var tempRange = currObj.find('.temp-range');
+    var minTemp = tempRange.attr('data-min-val');
+    var maxTemp = tempRange.attr('data-max-val');
+    var destCount = parseInt(tempRange.attr('data-dest-count'));
+    var apiResp = tempRange.attr('data-temp-api-resp');
+    var filteredDest = [];
+
+    if(minTemp && maxTemp && apiResp && destCount){
+        JSON.parse(apiResp).resp.forEach(function(item){
+            if(filteredDest.length < destCount && parseInt(item.temp) >= parseInt(minTemp) && parseInt(item.temp) <= parseInt(maxTemp) && item.code !== ""){
+                filteredDest.push(item.code);
+                destName = filteredDest.join(',');
+            }
+        });
+    }
+
+    if(sliderVal !== 'slider'){
+        tempRange.find('.ui-slider-handle.min .min-val').hide();
+        tempRange.find('.ui-slider-handle.min').on('mouseover',function(event){$(this).find('.min-val').show()});
+        tempRange.find('.ui-slider-handle.min').on('mouseout',function(event){$(this).find('.min-val').hide()});
+
+        tempRange.find('.ui-slider-handle.max .max-val').hide();
+        tempRange.find('.ui-slider-handle.max').on('mouseover',function(event){$(this).find('.max-val').show()});
+        tempRange.find('.ui-slider-handle.max').on('mouseout',function(event){$(this).find('.max-val').hide()});
+    }
+
+    return destName;
+}
+
+function multiDestinationCampaignSuccess(data, currObj){
+
+    var prefix = currObj.attr("data-prefix") || "";
+    var precision = currObj.attr("data-precision") || 0;
+    var decimal = currObj.attr("data-decimal") || "";
+    var thousand = currObj.attr("data-thousand") || "";
+    var suffix = currObj.attr("data-suffix") || "";
+    var enable = currObj.attr("data-enable")|| false;
+    var tripType = currObj.attr("data-tripType");
+    var campaignLabel = currObj.attr("data-campaign-label");
+	var isWifiEnabled = currObj.attr("data-wifi-enable");
+	var wifiPath = currObj.find('a').attr('href');
+	var items = "";
+    var formattedPrice="";
+    var validPrice = false;
+    var originCity = "";
+    var today = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
+    for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+            var val = data[key];
+            for (var i = 0; i < val.length; i++) {      // Per searchResponse
+
+                originCity = val[i].originCity.name;
+
+                // Defaults, if no price is returned
+                var outBoundDate = today.toISOString(); // today
+                var tempDay = new Date();
+				tempDay.setDate(today.getDate() + 7);
+                var inBoundDate = tempDay.toISOString();    //  + 7 days
+                formattedPrice = Granite.I18n.get("aem.commons.book-label"); //"BOOK"
+                var totalPrice = 0;
+
+                if (val[i].flightProducts!== undefined && !isNaN(val[i].flightProducts[0].lowestPrice.totalPrice)) {
+
+                    validPrice = true;
+
+                    if(enable){
+                        formattedPrice = accounting.formatMoney(val[i].flightProducts[0].lowestPrice.totalPrice, prefix, precision, thousand, decimal) + suffix;
+                    }
+                    else{
+                        formattedPrice = Math.round(val[i].flightProducts[0].lowestPrice.totalPrice) + ' ' + val[i].currency;
+                    }
+
+                    outBoundDate = val[i].flightProducts[0].outBoundDate;
+                    inBoundDate = val[i].flightProducts[0].inBoundDate;
+                    totalPrice = val[i].flightProducts[0].lowestPrice.totalPrice;
+                }
+                
+                var labelWithOrg = Granite.I18n.get("aem.marketing.campaign.one-way-label");
+
+                if(tripType === 'R') {
+                    labelWithOrg = Granite.I18n.get("aem.marketing.campaign.return-from-label");
+
+                }
+
+                var item = '<tr tabindex="0" role="link" onClick="onCampaignClick(this, event)" ' +
+                'onKeyPress="handleCampaignKeyPress(this, event)" ' +
+                'aria-label="' + val[i].originCity.name +' '+ val[i].destinationCity.name + ' ' +labelWithOrg +' '+ formattedPrice + '" ' +
+                    '" data-attr-org-airport="' + val[i].originAirport.name +
+                        '" data-attr-org="' + val[i].originAirport.code +
+                            '" data-attr-org-city="' + val[i].originCity.name +
+                                '" data-attr-dest-airport="' + val[i].destinationAirport.name +
+                                    '" data-attr-dest="' + val[i].destinationAirport.code +
+                                        '" data-attr-dest-city="' + val[i].destinationCity.name +
+                                            '" data-attr-type="' + tripType +
+                                                '" data-attr-outbound="' + outBoundDate +
+                                                    '" data-attr-inbound="' + inBoundDate +
+                                                        '" data-attr-price="' + totalPrice +
+															'" data-attr-wifi-enable="' + isWifiEnabled +
+																'" data-attr-wifi-path="' + wifiPath +
+																	'"><td>' + val[i].destinationCity.name 
+																	+ '</td><td>' + formattedPrice 
+																		+ '</td></tr>';
+
+                items += item;
+
+                if (i === 0) {
+                    currObj.show();
+
+                    currObj.find('.campaign-label').empty();
+                    var originCityObj = $("<th scope='col'>" + originCity + "</th>");
+                    var labelWithOrgObj = $("<th scope='col'>" + labelWithOrg + "</th>");
+                    currObj.find('.campaign-label').append(originCityObj, labelWithOrgObj);
+                }
+            }
+        }
+    }
+
+    currObj.find('tbody').empty().append(items);
+
+    if (campaignLabel !== '') {
+        currObj.find('.campaign-label div.pull-right').html(campaignLabel);
+    }
+
+    if(!validPrice){
+        currObj.find('.campaign-label div.pull-right').text("");
+    }
+
+    if(currObj.attr("data-enable-tempbar")){
+        var mediumBanner = currObj.closest('.medium-banner');
+        var tempRange = mediumBanner.find(".temp-range");
+        var marginVal = mediumBanner.find('.inner').height() - mediumBanner.find('table').height() - tempRange.outerHeight();
+        tempRange.css('margin-bottom', marginVal);
+    }
+
+}
+
+/* -------- End of Multiple Destination Campaign -------- */
+
+/* -------- Start of Single Destination Hero Campaign -------- */
+$(document).ready(function(event, newOriginCode) { 
+	initSingleHero(newOriginCode);
+});
+
+$(document).on("originChange", function(event, newOriginCode) {
+    initSingleHero(newOriginCode);  //calling initSingleHero funtion
+});
+
+function initSingleHero(newOriginCode) { //declaring initSingleHero funtion
+    $(".hero-campaign").each(function() {
+
+        var API_OFFERS_LOWPRICE = "offers/flightproduct/lowestFare";  // lpc url 
+        var baseURL = getApiHost() + API_OFFERS_LOWPRICE;
+        var localeHeader = getLanguageCode() + '_'+ getCountryCode();
+        
+        var currObj = $(this);
+        
+        var origName = currObj.attr("data-origName") || newOriginCode || getOriginCookie() || defaultOriginCode;
+        
+        //var baseURL = $(this).attr("data-base-url");
+        var campaignTitle = currObj.attr("data-campaign-title");
+        var campaignLabel = currObj.attr("data-campaign-label");
+        var destName = currObj.attr("data-destName");
+        var tripType = currObj.attr("data-tripType");
+        
+        
+        var prefix = currObj.attr("data-prefix") || "";
+        var precision = currObj.attr("data-precision") || 0;
+        var decimal = currObj.attr("data-decimal") || "";
+        var thousand = currObj.attr("data-thousand") || "";
+        var suffix = currObj.attr("data-suffix") || "";
+        var enable = currObj.attr("data-enable")|| false;
+        
+        //console.log(" prefix : "+prefix+" precision : "+precision+" decimal : "+decimal+" thousand : "+thousand+" suffix : "+suffix+" enable : single dest: "+enable);
+        
+        
+        var pos = getPOS();
+        
+        var today = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
+        var x = $(this).attr("data-startDate");
+        var startDate;
+        if(x === undefined) {
+            startDate = today;
+        } else{ 
+            var mmddyyFormat =  /(\d{1,2})\/(\d{1,2})\/(\d{2})$/;
+            if(mmddyyFormat.test(x)){
+                var match = mmddyyFormat.exec(x);
+                var dateStr = '20' + match[3] + '-' + match[1] + '-' + match[2];
+                startDate = new Date(dateStr);
+            }
+            else {
+                startDate = new Date(x);
+                
+            }
+            if(startDate < today) {
+                startDate = today;
+            } 
+        }
+        
+        var formatStartDate = getFormattedDateForApi(startDate);
+        
+        var y = $(this).attr("data-endDate");
+        var endDate;
+        if(y === undefined) {
+            endDate = new Date(startDate);
+            //endDate.setDate(startDate.getDate() + 90); 
+        } else{
+            var mmddyyFormat =  /(\d{1,2})\/(\d{1,2})\/(\d{2})$/;
+            if(mmddyyFormat.test(y)){
+                var match = mmddyyFormat.exec(y);
+                var dateStr = '20' + match[3] + '-' + match[1] + '-' + match[2];
+                endDate = new Date(dateStr);
+            }
+            else {
+                endDate = new Date(y);
+            }
+        }
+        if(endDate <= startDate) {
+            endDate.setDate(startDate.getDate() + 90);
+        }
+        
+        var formatEndDate = getFormattedDateForApi(endDate);
+        
+        
+        currObj.hide();
+        
+        if(origName && destName!==undefined && tripType!==undefined){
+            $.ajax({
+                url: baseURL,
+                data: { 
+                    "from":origName,
+                    "to":destName,
+                    "startDate":formatStartDate,
+                    "endDate":formatEndDate,
+                    "paxType":"ADT",
+                    "displayType":"DAY",
+                    "pos":pos,
+                    "tripType":tripType
+                } ,    
+                beforeSend: function (jqXHR, settings) {
+                    //console.log("API call : token : " + oauthToken);
+                    //jqXHR.setRequestHeader('Authorization', oauthToken);
+                    jqXHR.setRequestHeader('Accept-Language', localeHeader);
+                    //return true;
+                },
+                success: function(data, textStatus, jqXHR) {
+                    var items = "";
+                    var cityClassName = "";
+                    var formattedPrice="";
+                    var validPrice = false;
+                    for (var key in data){
+                        if(data.hasOwnProperty(key)){
+                            var val = data[key];
+                            for(var i=0; i<val.length;i++){ // Per searchResponse
+                                
+                                // Defaults, if no price is returned
+                                var outBoundDate = today.toISOString();	// today
+                                var tempDay = new Date(); tempDay.setDate(today.getDate() + 7);
+                                var inBoundDate = tempDay.toISOString();	//  + 7 days
+                                formattedPrice = "";
+                                var totalPrice = 0;
+                                
+                                if(val[i].flightProducts!== undefined && !isNaN(val[i].flightProducts[0].lowestPrice.totalPrice)){
+                                    
+                                    validPrice = true;
+                                    
+                                    if(enable){
+                                        formattedPrice = accounting.formatMoney(val[i].flightProducts[0].lowestPrice.totalPrice, prefix, precision, thousand, decimal) + suffix;
+                                    }
+                                    else{
+                                        formattedPrice=Math.round(val[i].flightProducts[0].lowestPrice.totalPrice) +' '+val[i].currency;
+                                    }
+                                    
+                                    outBoundDate = val[i].flightProducts[0].outBoundDate;	
+                                    inBoundDate = val[i].flightProducts[0].inBoundDate;	
+                                    totalPrice = val[i].flightProducts[0].lowestPrice.totalPrice;
+                                    
+                                }
+                                else {
+                                    // console.log("Single Hero Campaign : Unable to process API response");
+                                }
+                                
+                                currObj.find('.orgin').html(val[i].originCity.name);
+                                currObj.find('.orgin').attr("aria-label",val[i].originCity.name);
+                                cityClassName =val[i].destinationCity.name;
+                                
+                                items = formattedPrice;
+                                currObj.find('.btn').attr("data-attr-org",val[i].originAirport.code);
+                                currObj.find('.btn').attr("data-attr-org-city",val[i].originCity.name);
+                                currObj.find('.btn').attr("data-attr-org-airport",val[i].originAirport.name);
+                                currObj.find('.btn').attr("data-attr-dest",val[i].destinationAirport.code);
+                                currObj.find('.btn').attr("data-attr-dest-city",val[i].destinationCity.name);
+                                currObj.find('.btn').attr("data-attr-dest-airport",val[i].destinationAirport.name);
+                                currObj.find('.btn').attr("data-attr-type",tripType);
+                                currObj.find('.btn').attr("data-attr-outbound",outBoundDate);
+                                currObj.find('.btn').attr("data-attr-inbound",inBoundDate);
+                                currObj.find('.btn').attr("data-attr-price",totalPrice);
+                                
+                                if(i==0){
+                                    currObj.show();
+									if(currObj.parent().parent().parent().hasClass("banner-inner-bottom-content")){
+										currObj.parent().parent().parent().addClass("campaign-height");
+                                    }
+                                    //currObj.find(".btn").attr("title",val[i].destinationCity.name + " " + formattedPrice);
+                                }
+                                
+                            }
+                        }
+                    }
+                    
+                    
+                    if(campaignTitle === undefined || campaignTitle === ''){
+                        campaignTitle = cityClassName;
+                    }
+                    currObj.find("h2:eq(0)").html(campaignTitle);
+                    currObj.find("h2:eq(0)").attr("aria-label",campaignTitle);
+                    currObj.find("h2:eq(1)").html(items);
+                    currObj.find("h2:eq(1)").attr("aria-label",items);
+                    if(campaignLabel !== '' && campaignLabel !== undefined){
+                        currObj.find('.trip-type').html(campaignLabel);
+                    }
+                    if(!validPrice){
+                        currObj.find('.trip-type').html("");
+                        currObj.find('.trip-type').attr("aria-label","");
+                        currObj.find("h2:nth-child(2)").html("");
+                        currObj.find("h2:nth-child(2)").attr("aria-label","");
+                    }
+                    
+					var bkColor = currObj.closest(".banner-wrapper").attr("data-highlight-color");
+                    if(bkColor != null && bkColor !== ""){
+                        if(currObj.find("h2").text() === ""){
+                            currObj.parent().removeClass("head-highlight");
+                        } else {
+                            currObj.parent().addClass("head-highlight");
+                        }
+                    }
+
+                    currObj.find(".btn").attr("aria-label",currObj.text());
+                    
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log("Single Hero Campaign : Error : " + errorThrown);
+                }             
+            });
+        }
+    });
+}
+/* -------- End of Single Destination Hero Campaign -------- */
+/* -------- Start of Single Destination Campaign -------- */
+
+$(document).on("originChange", function(event, newOriginCode) {
+    initSingleDesti(newOriginCode);  //calling initSingleDesti funtion
+});
+
+function initSingleDesti(newOriginCode) {
+    $(".single-destination-campaign").each(function() {
+		var API_OFFERS_LOWPRICE = "offers/flightproduct/lowestFare";  // lpc url 
+        var baseURL = getApiHost() + API_OFFERS_LOWPRICE;
+        var localeHeader = getLanguageCode() + '_'+ getCountryCode();
+
+        var currObj = $(this);
+        
+        var origName = currObj.attr("data-origName") || newOriginCode || getOriginCookie() || defaultOriginCode;
+       
+        //var baseURL = $(this).attr("data-base-url");
+        var campaignTitle = currObj.attr("data-campaign-title");
+        var campaignLabel = currObj.attr("data-campaign-label");
+        var destName = currObj.attr("data-destName");
+        var tripType = currObj.attr("data-tripType");
+        
+        var prefix = currObj.attr("data-prefix") || "";
+        var precision = currObj.attr("data-precision") || 0;
+        var decimal = currObj.attr("data-decimal") || "";
+        var thousand = currObj.attr("data-thousand") || "";
+        var suffix = currObj.attr("data-suffix") || "";
+        var enable = currObj.attr("data-enable")|| false;
+        
+        var pos = getPOS();
+        
+        var today = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
+        var x = $(this).attr("data-startDate");
+        
+        var startDate;
+        if(x === undefined) {
+            startDate = today;
+        } else{ 
+            var mmddyyFormat =  /(\d{1,2})\/(\d{1,2})\/(\d{2})$/;
+            if(mmddyyFormat.test(x)){
+                var match = mmddyyFormat.exec(x);
+                var dateStr = '20' + match[3] + '-' + match[1] + '-' + match[2];
+                startDate = new Date(dateStr);
+            }
+            else {
+                startDate = new Date(x);
+                
+            }
+            if(startDate < today) {
+                startDate = today;
+            } 
+        }
+        
+        var formatStartDate = getFormattedDateForApi(startDate);
+        
+        var y = $(this).attr("data-endDate");
+        var endDate;
+        if(y === undefined) {
+            endDate = new Date(startDate);
+            //endDate.setDate(startDate.getDate() + 90); 
+        } else{
+            var mmddyyFormat =  /(\d{1,2})\/(\d{1,2})\/(\d{2})$/;
+            if(mmddyyFormat.test(y)){
+                var match = mmddyyFormat.exec(y);
+                var dateStr = '20' + match[3] + '-' + match[1] + '-' + match[2];
+                endDate = new Date(dateStr);
+            }
+            else {
+                endDate = new Date(y);
+            }
+        }
+        if(endDate <= startDate) {
+            endDate.setDate(startDate.getDate() + 90);
+        }
+        
+        var formatEndDate = getFormattedDateForApi(endDate);
+        
+        currObj.hide();
+        
+        if(origName && destName !== undefined && tripType !== undefined){
+            $.ajax({
+                url: baseURL,
+                data: { 
+                    "from":origName,
+                    "to":destName,
+                    "startDate":formatStartDate,
+                    "endDate":formatEndDate,
+                    "paxType":"ADT",
+                    "displayType":"DAY",
+                    "pos":pos,
+                    "tripType":tripType,
+                    
+                } ,    
+                beforeSend: function (jqXHR, settings) {
+                    //console.log("API call : token : " + oauthToken);
+                    //jqXHR.setRequestHeader('Authorization', oauthToken)
+                    jqXHR.setRequestHeader('Accept-Language', localeHeader);
+                    //return true;
+                },
+                success: function(data, textStatus, jqXHR) {
+                    
+                    
+                    var items = "";
+                    var cityClassName = "";
+                    var formattedPrice="";
+                    var fP="";
+                    var validPrice = false;
+                    for (var key in data){
+                        if(data.hasOwnProperty(key)){
+                            var val = data[key];
+                            for(var i=0; i<val.length;i++){	// Per searchResponse
+                                
+                                // Defaults, if no price is returned
+                                var outBoundDate = today.toISOString();	// today
+                                var tempDay = new Date(); tempDay.setDate(today.getDate() + 7);
+                                var inBoundDate = tempDay.toISOString();	//  + 7 days
+                                //formattedPrice = "BOOK";
+                                formattedPrice = Granite.I18n.get("aem.commons.book-label"); // "BOOK"
+                                var totalPrice = 0;
+                                
+                                if(val[i].flightProducts!== undefined && !isNaN(val[i].flightProducts[0].lowestPrice.totalPrice)){
+                                    
+                                    validPrice = true;
+                                    
+                                    if(enable){
+                                        formattedPrice = accounting.formatMoney(val[i].flightProducts[0].lowestPrice.totalPrice, prefix, precision, thousand, decimal) + suffix;
+                                    }else{
+                                        formattedPrice = Math.round(val[i].flightProducts[0].lowestPrice.totalPrice) +' ' +val[i].currency;
+                                    }
+                                    outBoundDate = val[i].flightProducts[0].outBoundDate;	
+                                    inBoundDate = val[i].flightProducts[0].inBoundDate;	
+                                    totalPrice = val[i].flightProducts[0].lowestPrice.totalPrice;
+                                    
+                                } else{
+                                    //console.log("Single destinations : Unable to process API response");
+                                }
+                                
+                                cityClassName =val[i].destinationCity.name;
+                                
+                                items = '<h3 class="pull-right" onClick="onCampaignClick(this,event)" title="' + val[i].destinationCity.name + 
+                                    ' ' + formattedPrice + '" aria-label="' + val[i].destinationCity.name + 
+                                    ' ' + formattedPrice + '" ' +
+                                        '" data-attr-org-airport="' + val[i].originAirport.name +
+                                            '" data-attr-org="' + val[i].originAirport.code +
+                                                '" data-attr-org-city="' + val[i].originCity.name +
+                                                    '" data-attr-dest-airport="' + val[i].destinationAirport.name +
+                                                        '" data-attr-dest="' + val[i].destinationAirport.code +
+                                                            '" data-attr-dest-city="' + val[i].destinationCity.name +
+                                                                '" data-attr-type="'+ tripType +
+                                                                    '" data-attr-outbound="'+ outBoundDate +
+                                                                        '" data-attr-inbound="'+ inBoundDate +
+                                                                            '" data-attr-price="'+ totalPrice +
+                                                                                '">' + formattedPrice + '</h3>';
+                                
+                                if(i==0){
+                                    currObj.show();
+									if(currObj.parent().parent().parent().hasClass("banner-inner-bottom-content")){
+										currObj.parent().parent().parent().addClass("campaign-height");
+                                    }
+                                    var labelWithOrg = Granite.I18n.get("aem.marketing.campaign.one-way-label");
+                                    //var labelWithOrg = "One way from";
+                                    if(tripType === 'R') {
+                                        labelWithOrg = Granite.I18n.get("aem.marketing.campaign.return-from-label");
+                                        //labelWithOrg = "Return from";
+                                    }
+                                    currObj.find(".return-label").text(labelWithOrg);
+                                    currObj.find(".return-label").attr("aria-label",labelWithOrg);
+                                }
+                            }
+                        }
+                    }
+					currObj.find('.price-value h3.pull-right').remove();
+                    currObj.find(".price-value").append(items);
+                    currObj.closest(".price-value").click(function(event) {
+                        $(this).find("h3.pull-right").triggerHandler("click");
+                        return false;
+                    });
+                    
+                    if(campaignTitle === undefined || campaignTitle === ''){
+                        campaignTitle = cityClassName;
+                    }
+                    
+                    currObj.find("h2:first-child").html(campaignTitle);
+                    currObj.find("h2:first-child").attr("aria-label",campaignTitle);
+
+                    if(campaignLabel !== ''){
+                        currObj.find('.return-label').html(campaignLabel);
+                        currObj.find('.return-label').attr("aria-label",campaignLabel);
+                    }
+                    if(!validPrice){
+                        currObj.find('.return-label').html("");
+                        currObj.find('.return-label').attr("aria-label","");
+                    }
+                    
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log("Single destinations : Error fetching data : "+errorThrown);
+                }             
+            });
+        }
+    });
+}
+/* -------- End of Single Destination Campaign -------- */
+/*********** Start of CTA Link *********/
+//$(document).ready(function($) {
+$( document ).on( "loadCMS", function( event ) {
+
+    $('.cms-login').each(function(  ){
+		$(this).attr("href","#/profile?userAction=Login");
+	});
+	/*
+    $( ".cms-login" ).on( "click", function( event ) {
+
+        window.location.href="#/profile?userAction=Login";
+        return;
+    });
+	*/
+
+    $('.cms-register').each(function(  ){
+		$(this).attr("href","#/profile?userAction=Register");
+	});
+    /*
+    $( ".cms-register" ).on( "click", function( event ) {
+
+        window.location.href="#/profile?userAction=Register";
+        return;
+    });
+	*/
+
+    $('.cms-ebDashboard').each(function(  ){
+		/* Fix for CMS-461 */
+		$(this).attr("href",getExternalizedRootPage()+"#/profile?userAction=Eurobonus");
+	});
+	/*
+	$( ".cms-ebDashboard" ).on( "click", function( event ) {
+
+        window.location.href="#/profile?userAction=Eurobonus";
+        return;
+    }); 
+	*/
+	/*
+    $( ".cms-protected" ).on( "click", function( event ) {
+		validateUser($( this ).attr("data-href"));
+    });
+
+	function validateUser(url){
+		$( document ).on( "userSignedIn", function( event ) {
+            console.log("Received login complete notification : " + window.cmsUrl);
+        	if(window.cmsUrl != null){
+				window.location.href = window.cmsUrl;
+            }
+    	});
+
+		var SSOCodeFromCookie = getSSOCookie();
+        if(SSOCodeFromCookie!=null){
+        	window.location.href = url;
+       	}else{
+        	window.cmsUrl = url;
+            //$(document).trigger( "signInUser");
+
+            console.log("About to invoke login");
+       		$("#ocpWidget_login").triggerHandler("click");
+        }
+
+  	}
+	*/
+ });
+
+
+
+
+
+
+
+var newWindowIconObj = {
+    
+    loadGraniteKeys : function(){
+        var extDomain = window.i18ExcludeDomains || null;
+        if(!extDomain) {
+            extDomain = Granite.I18n.get("new-window.external-exclude-domain");
+            window.i18ExcludeDomains = extDomain;
+        }
+    },
+
+    init : function(){
+
+        var extDomain = window.i18ExcludeDomains;
+        var newWindowRole = window.i18LinkRole;
+
+        var greyBgLinkClr = 'rgb(63, 61, 58)'; //'#3f3d3a';
+        var blueBgLinkClr = 'rgb(255, 255, 255)'; //'#ffffff';
+        var whiteBgLinkClr = 'rgb(1, 89, 206)'; //'#0159ce';
+
+        var greyBgLinkIcon = 'icon-external-link-grey';
+        var blueBgLinkIcon = 'icon-external-link-white';
+        var whiteBgLinkIcon = 'icon-external-link-blue';
+        var defaultIcon = greyBgLinkIcon;
+
+        if(extDomain){
+            extDomain = extDomain.split(',');
+            $('a:not(.follow-us-block>a)').each(function(){
+                if($(this).attr('href') && $(this).attr('href').indexOf('http') >= 0 && this.children.length === 0 && !$(this).attr('aria-describedby')){
+                    var linkHref = $(this).attr('href');
+                    var extLinkFlag = false;
+                    extDomain.forEach(function(item){
+                        extLinkFlag = (linkHref.indexOf("//"+item+"/") >= 0 || linkHref.indexOf("www."+item+"/") >= 0 || linkHref.indexOf(window.location.hostname) >= 0) || extLinkFlag;
+                    });
+                    if(!(extLinkFlag)){
+
+                        var linkColor = $(this).css('color');
+                        var newWinSpan = " <span class='REPLACE_THIS' role='presentation'></span>";
+
+                        if(linkColor === greyBgLinkClr){
+                            newWinSpan = newWinSpan.replace('REPLACE_THIS', greyBgLinkIcon);
+                        } else if(linkColor === blueBgLinkClr){
+                            newWinSpan = newWinSpan.replace('REPLACE_THIS', blueBgLinkIcon);
+                        } else if(linkColor === whiteBgLinkClr){
+                            newWinSpan = newWinSpan.replace('REPLACE_THIS', whiteBgLinkIcon);
+                        } else {
+                            newWinSpan = newWinSpan.replace('REPLACE_THIS', defaultIcon);
+                        }
+                        $(this).append(newWinSpan);
+                        $(this).attr('aria-describedby','extdisclaimer');
+						$(this).attr('target','_blank');
+                    }
+                }
+            });
+        }
+    }
+}
+
+newWindowIconObj.loadGraniteKeys();
+
+$(document).ready(function() {
+    newWindowIconObj.init();
+});
+
+$( document ).ajaxStop(function() {
+    newWindowIconObj.init();
+});
+
+/*********** End of CTA Link *********/
+/*** Start of Personalisation ***/
+
+var personalisationTribesObj = {
+    defaultTribe : "default",
+    allTribe : "all_tribe",
+    counter : 0,
+
+    initPersonalisationTribes : function(){
+        if(!getOAuthCookie()){
+			writeCookie("_dna","",-1);
+        }
+        $(".personalisation-wrapper").each(function() {
+            personalisationTribesObj.showPage();return;
+        });
+    },
+
+    getTribe : function(){
+        var tribe;
+        if(getCustomerDNACookie()){
+            var dnaData=getCustomerDNACookie();
+            var dnaTokenArr=dnaData.split(',');
+            var customerTribe=(dnaTokenArr[0] || this.defaultTribe);
+            var upcomingBookingPNR=dnaTokenArr[1];
+            tribe=customerTribe.toLowerCase();
+        }
+        else{
+            tribe=this.defaultTribe;
+        }
+        return tribe;
+    },
+
+    getValueByKey : function(key, tribeObj) {
+        var i, defaultStr = "", allTribeStr = "", str="", len = tribeObj.length;
+        for (i = 0; i < len; i++) {
+            if(!defaultStr){
+                defaultStr = tribeObj[i][this.defaultTribe];
+                if (defaultStr) {
+                    defaultStr = defaultStr.substring(defaultStr.indexOf("/bannerPage"));
+                }
+            }
+            if(!allTribeStr){
+                allTribeStr = tribeObj[i][this.allTribe];
+                if (allTribeStr) {
+                    allTribeStr = allTribeStr.substring(allTribeStr.indexOf("/bannerPage"));
+                }
+            }
+            if(allTribeStr && key !== this.defaultTribe){
+                return allTribeStr;
+            }
+            if (!str) {
+                str = tribeObj[i][key];
+                if (str) {
+                    str = str.substring(str.indexOf("/bannerPage"));
+                }
+            }
+        }
+        if (str) {  
+            return str;
+        }
+        return defaultStr;
+    },
+
+    showPage : function(callDefaultTribeFlag){
+
+        var tribeName = this.defaultTribe;
+        if(!callDefaultTribeFlag) {
+            tribeName = this.getTribe();
+        }
+
+        var tribejson = $(".personalisation-wrapper").attr("data-tribe-attr");
+		
+		if(!tribejson){
+			return;
+		}
+        var tribeObj=JSON.parse(tribejson);
+
+        if(!docOnReadyCalled && tribeObj.tribePaths.length === 1 && Object.keys(tribeObj.tribePaths[0])[0] === 'default'){
+            return;
+        }
+        
+        var pageLink;
+        if (tribeObj.tribePaths.length === 0) {
+			pageLink = getExternalizedRootPage() +"/bannerPage/common_tribe/jcr:content/bannerPar.html"
+        } else {
+			pageLink = getExternalizedRootPage() + personalisationTribesObj.getValueByKey(tribeName, tribeObj.tribePaths)+".html";
+        }
+        // var pageLink = "/content/flysas-se/sv/home/common_tribe/jcr:content/par-content/tribe_holder.html";
+        //var pageLink = getExternalizedRootPage() +"/bannerPage/"+tribeName+"/jcr:content/bannerPar.html";
+        var thisObj = this;
+
+        $.ajax({
+            method: "GET",
+            dataType: "html",
+            url: pageLink,
+            success: function(data) {
+                $("body .start-page .personalisation-wrapper").html(data);
+				if(typeof updateAttrFromTarget != "undefined"){ //function used for attributes update from TARGET
+					updateAttrFromTarget();
+				}
+                $(document).trigger("loadPersonalizeComp");
+                thisObj.counter=0;
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // debugger;
+                console.log("Personalisation : Error fetching page : "+errorThrown);
+                if(thisObj.counter === 0){
+                    thisObj.showPage(true);
+                    thisObj.counter++;
+                }
+            }  
+        });
+    }
+}
+
+$( document ).on( "userSignedOut", function( event ) {
+    writeCookie("_dna","",-1);
+    personalisationTribesObj.showPage();
+});
+
+
+var docOnReadyCalled = true;
+$(document).ready(function() {
+    if(docOnReadyCalled){
+        personalisationTribesObj.initPersonalisationTribes();
+        docOnReadyCalled = false;
+    }
+});
+/* start of common script */
+
+//NOTE : duplicate of common script with functions used in side banner components are hosted on transation server, so if changes are made here then they should be deployed there as well, */
+/* the file shared with TXN team should have the object : personalisationObjTxn, and event listener should be like below
+$(document).on("originChange", function(event, newOriginCode) {
+    Granite.I18n.setLocale(getLocale());
+    checkinMobileComponent.init();
+    checkinComponent.init();
+});
+file is present in the same directory, name : txn-script.js, not part of aem script.
+*/
+
+$(document).on("loadPersonalizeComp originChange", function(event, newOriginCode) {
+    Granite.I18n.setLocale(getLocale());
+    personalisationObj.renderedOfferCodes = [];
+    personalisationObj.newOriginCode = newOriginCode;
+    if(window.reservationOfferComponent) reservationOfferComponent.initReservationOffer();
+    if(window.offerSalesComponent) offerSalesComponent.initOfferSales();
+    if(window.reservationOfferSmallComponent) reservationOfferSmallComponent.initReservationOfferSmall();
+    if(window.offerSalesSmallComponent) offerSalesSmallComponent.initOfferSalesSmall();
+    if(window.groupedReservationComponent) groupedReservationComponent.initGroupedReservation();
+    if(window.groupedOfferSalesComponent) groupedOfferSalesComponent.initGroupedOfferSales();
+
+    ajaxTrackerFlag = true;
+});
+
+var personalisationObj = {
+    renderedOfferCodes : [],
+    newOriginCode : '',
+
+    monthArray : [Granite.I18n.get("aem.marketing.vacPlanner.month-jan-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-feb-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-mar-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-apr-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-may-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-jun-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-jul-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-aug-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-sep-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-oct-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-nov-label"),
+       Granite.I18n.get("aem.marketing.vacPlanner.month-dec-label")
+    ],
+
+    localeHeader : function(){
+        return (getLanguageCode() + '_' + getCountryCode());
+    },
+
+    offerServiceURL : function(){
+        return (getApiHost()+"personalizedoffer/offers");
+    },
+
+    getTripType : function(tripOpt) {
+        var tripTypeValue = "";
+        if(tripOpt === "O"){
+            tripTypeValue=Granite.I18n.get("label-one-way-from");
+        } else if(tripOpt === "R"){
+            tripTypeValue=Granite.I18n.get("label-return-from");
+        }
+        return tripTypeValue;
+    },
+
+    setBackgroundImg : function (currObj) {
+        if(!(currObj && currObj[0])){ return; }
+        var imgObj = currObj.find(".offer-sales-swatch");
+        var imageUrl = imgObj.attr("data-image-firstPart");
+        var secondPart = imgObj.attr("data-image-secondPart");
+
+        var viewportWidth = currObj.width();    
+
+        if(!(secondPart === undefined || secondPart == null || secondPart === "")) {
+            imageUrl += ".img.";
+            if(viewportWidth <= 320) {
+                imageUrl += "320.medium.";
+            } else if(viewportWidth <= 400) {
+                imageUrl += "400.medium.";
+            }  else if(viewportWidth <= 768) {
+                imageUrl += "768.medium.";
+            } else {
+                imageUrl += "1280.medium.";
+            }
+            imageUrl += secondPart;
+        }
+
+        var backgroundImgElem;
+        if(currObj[0].className.indexOf('inner') > -1){
+            backgroundImgElem = currObj;
+        } else {
+            backgroundImgElem = currObj.find('.inner');
+        }
+        if(!(backgroundImgElem[0] && backgroundImgElem[0].style && backgroundImgElem[0].style.backgroundSize  && backgroundImgElem[0].style.backgroundImage)){
+            backgroundImgElem.css("background-image","url('" + imageUrl + "')");
+            backgroundImgElem.css("background-size", "cover");
+            backgroundImgElem.css("background-position", "50% 50%");
+        }
+    },
+
+    getRequestData : function (currObj, pnr) {
+
+        var channel = "Web";
+        var customerId = this.getCustomerIdFromCookie();
+        var strategy = (currObj.attr("data-strategy") === 'None' ? "" : (currObj.attr("data-strategy") || ""));
+        var productType = (currObj.attr("data-productType") === 'None' ? "" : (currObj.attr("data-productType") || ""))
+        var category = currObj.attr("data-programType") +';'+ strategy +';'+ productType;
+        var maxOffers = currObj.attr("data-maxOffer") || "1";
+        var themes = currObj.attr("data-theme") || "";
+        var orgAirport = this.newOriginCode || getOriginCookie() || "ARN";
+        var market = getCountryCode();
+        var tripType = currObj.attr("data-tripType") || "";
+
+        if(!(customerId && category && category.indexOf(';') > 1)) {
+            return null;
+        }
+        //todo max offer multiply on the basis of dialog duplicate flag
+        return {
+            "transactionId": "",
+            "channel" : channel,
+            "customerId" : customerId,
+            "pnr" : pnr,
+            "category" : category,
+            "maxOffers" : maxOffers,
+            "themes" : themes,
+            "orgAirport" : orgAirport,
+            "market" : market,
+            "tripType" : tripType,
+            "language" : getLanguageCode()
+        };
+    },
+
+    getCustomerIdFromCookie : function () {
+
+        var dnaData=getCustomerDNACookie();
+        if(dnaData) {
+            var dnaTokenArr=dnaData.split(',');
+
+            return dnaTokenArr[2];
+        }
+        return null;
+    },
+
+    getPnrFromCookie : function () {
+
+        var dnaData=getCustomerDNACookie();
+        if(dnaData) {
+            var dnaTokenArr = dnaData.split(',');
+            var upcomingBookingPNR = (dnaTokenArr[1] && dnaTokenArr[1] === "undefined") ? undefined : dnaTokenArr[1];
+
+            return upcomingBookingPNR;
+        }
+        return null;
+    },
+
+    getTarget : function (targetVal) {
+        var sameWindowVals = ["Go", "Go-light", "Plus", "Business", "Plus and Business", "Go-light and Go", "Go-light, Go and Plus", "Meal", "X-bag", "Pre-seat"];
+
+        var newWindowVals = ["Upgrade", "Hotel", "Transfer", "Car rental"]
+
+        //["Lounge", "Other", "Co-brand", "Online shopping", "Other partners", "ALL"]
+
+        if(sameWindowVals.indexOf(targetVal) >= 0) {
+            return "_top";
+        } else if(newWindowVals.indexOf(targetVal) >= 0) {
+            return "_blank";
+        }
+        return null;
+    },
+
+     getPersonalisationImgPath : function (offerCode, currObj) {
+        var thisObj = this;
+
+        if(offerCode) {
+            offerCode = offerCode.replace(/[^a-zA-Z0-9 ]+/g, "").replace(/ /g,"-").toLowerCase();
+        } else {
+            return;
+        }
+
+        var url = '/bin/sas/searchAssetResults.'+offerCode+'.json';
+        var data = "";
+
+        var viewportWidth = currObj.width();
+        var dimensions = '';
+        if(viewportWidth <= 320) {
+            dimensions += "400.250";
+        } else if(viewportWidth <= 768) {
+            dimensions += "768.480";
+        } else {
+            dimensions += "1280.800";
+        }
+
+        var requestData = thisObj.getRequestData(currObj, thisObj.getPnrFromCookie());
+        var cachedImg = thisObj.getOfferImageFromSession(requestData, offerCode);
+        if(cachedImg){
+            currObj.attr("data-assetId", cachedImg);
+
+            thisObj.setTaggedBackgroundImg(currObj, dimensions, cachedImg);
+
+        } else {
+
+            this.doGet(url, data, function(data){
+                var imageUrl = data.path;
+
+                currObj.attr("data-assetId", imageUrl);
+
+                if(imageUrl){
+                    thisObj.setTaggedBackgroundImg(currObj, dimensions, imageUrl);
+                    thisObj.storeOfferImageInSession(requestData, offerCode, imageUrl);
+                }
+            });
+        }
+    },
+
+    setTaggedBackgroundImg : function(currObj, dimensions, imageUrl){
+        var imgPathPart1 = imageUrl.substring(0, imageUrl.lastIndexOf('.'));
+        var imgPathPart2 = imageUrl.substring(imageUrl.indexOf('.')+1);
+
+        var adaptiveImgPath = [imgPathPart1, "reimage", dimensions, imgPathPart2];
+        var backgroundImgElem;
+        if(currObj[0].className.indexOf('inner') > -1){
+            backgroundImgElem = currObj;
+        } else {
+            backgroundImgElem = currObj.find('.inner');
+        }
+        backgroundImgElem.css("background-image","url('" + adaptiveImgPath.join('.') + "')");
+        backgroundImgElem.css("background-size", "cover");
+        backgroundImgElem.css("background-position", "50% 50%");
+    },
+
+    setTextBgColor : function (currObj) {
+        $(".reservation-view h4 ").wrapAll("<div class='paratext'>");
+        $('.offer-medium h4').nextUntil('.offer-medium button').addBack().wrapAll('<div class="paratextoffer" />');
+        var elems = ['h3',' .paratext','.paratextoffer'];
+        var bgColor = currObj.attr("data-bgcolor");
+        if(currObj.find('.campaign-label') && currObj.find('.campaign-label').length > 0){
+            elems = ['h2'];
+        }
+        if(bgColor){
+            elems.forEach(function(elem) {
+                var selectedElems = currObj.find(elem);
+                for(var i=0; i<selectedElems.length; i++) {
+                    if(selectedElems[i].children.length > 0){
+                        selectedElems[i].children[0] && (selectedElems[i].children[0].className += " "+bgColor + " pad-10");
+                    } else {
+                        selectedElems[i].className += " "+bgColor + " pad-10 mrgn-20";
+                    }
+                    for(var j=1; j<selectedElems[i].children.length; j++) {
+                    	if(selectedElems[i].children.length >= 1) {
+                        	var childtext=$( selectedElems[i].children[j] ).text();
+                        	if(childtext)
+								selectedElems[i].children[j] && (selectedElems[i].children[j].className += " "+bgColor + " pad-10 ");
+                        		$(".paratext").addClass(currObj.attr("data-bgcolor"));
+                            	$(".paratextoffer").addClass(currObj.attr("data-bgcolor"));
+                        }
+
+                    }
+                }
+            });
+        }
+    },
+
+    getReservationProductTypeFlag : function(productType) {
+        var productTypes = ['car rental', 'hotel'];
+        if(productTypes.indexOf(productType.toLowerCase()) > -1){
+            return true;
+        }
+        return false;
+    },
+
+    isDuplicateOfferCode : function(offerCode) {
+        if(this.renderedOfferCodes.indexOf(offerCode) < 0) {
+            this.renderedOfferCodes.push(offerCode);
+        }
+    },
+
+    getUrlParameterByName : function (name, url) {
+        if (!url){
+          url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    },
+
+
+    onOfferClick : function(event, offer){
+        /*var url = offer["cta"];
+        var org = this.getUrlParameterByName("org", url);
+        var dest = offer['arrivalAirport'];
+        var type = this.getUrlParameterByName("dest", url);
+        var outbound = this.getUrlParameterByName("out", url);
+        var inbound = this.getUrlParameterByName("in", url);*/
+
+        var org = offer['originAirportCode'];
+        var dest = offer['destinationAirportCode'];
+        /*var type = offer['tripType'];*/
+        var outbound = offer['priceStartDate'].replace('0000','');
+        var inbound = offer['priceEndDate'];
+
+        if(inbound === "undefined" || inbound == null){
+
+            var year = outbound.substring(0,4);
+            var month = outbound.substring(4,6);
+            var day = outbound.substring(6,8);
+
+            var inDate = new Date(year, month-1, day);
+            inDate.setDate(inDate.getDate() + 7);
+            inbound = inDate.toISOString().substring(0, 10).replace(/-/g,"");
+        }
+
+        /*if(type == 'O'){
+            var tripType = 'OW';
+            window.location.href = "/lowpricecalendar?search=" + tripType + "_" + org + "-" + dest + "-" + outbound + "_a1c0i0y0_REV";
+        } else if(type == 'R'){*/
+            var tripType = 'RT';
+            window.location.href = "/lowpricecalendar?search=" + tripType + "_" + org + "-" + dest + "-" + outbound + "-" + inbound + "_a1c0i0y0_REV";
+        //}
+
+    },
+
+    setSingleOfferView : function(currObj, offer){
+        currObj.attr("data-propositionId", offer['propositionId']);
+
+        var formattedPrice= null;
+
+        if(offer["price"] && parseInt(offer["price"])){
+            formattedPrice = offer["price"] +' '+ (offer["currency"] || "");
+        }
+
+        var tripType = this.getTripType(offer["tripType"]);
+        var title = (offer["mediumTitle"] || offer['shortTitle']);
+        /*var offerProdType = offer["offerProdType"];*/
+        var originCity = offer['originCity'];
+        var destinationCity = offer['destinationCity'];
+
+        var offerMediumElem = currObj.find(".offer-medium");
+        var buttonHTML = offerMediumElem.find('.btn');
+
+        /*var target = this.getTarget(offerProdType);
+        if(!target && currObj.attr("data-newWindow")){
+            target = "_blank";
+        } else if(!target) {
+            target = "_top";
+        }*/
+
+        var snippet = "<h3 aria-label='"+title+"'><span class=''>"+title+"</span></h3>"
+        + "<h4 aria-label='"+originCity+"'>"+originCity+"</h4>"
+        + "<h2 aria-label='"+destinationCity+"'>"+destinationCity+"</h2>"
+        + "<h4 aria-label='"+tripType+"'>"+tripType+"</h4>"
+        + (formattedPrice ? '<h2 aria-label="'+formattedPrice+'">'+formattedPrice+'</h2>' : '');
+
+        var btnAria = title +' '+ originCity +' '+ destinationCity +' '+ tripType +' '+ (formattedPrice ||  Granite.I18n.get("aem.commons.book-label"));
+        $(buttonHTML).attr('aria-label', btnAria);
+        offerMediumElem.empty();
+        offerMediumElem.append(snippet);
+        offerMediumElem.append(buttonHTML);
+        $(buttonHTML).click(function(event){personalisationObj.onOfferClick(event,offer);});
+    },
+
+    setReservationView : function(currObj, offer){
+        currObj.attr("data-propositionId", offer['propositionId']);
+
+        var title = (offer["mediumTitle"] || offer['shortTitle']);
+        var arrivalAirport = offer["arrivalAirport"];
+        var departureAirport = offer["departureAirport"];
+        /*var dateOfTravel = offer["outboundDateOfTravel"];*/
+        var dateOfTravelString = offer["outboundDateOfTravelString"];
+        var returnDateString = offer["homeboundDateOfTravelString"];
+        var url = offer["cta"];
+        var offerProdType = offer["offerProdType"];
+        var destinationCity = offer["destinationCity"];
+        var originCity = offer["originCity"];
+
+        /*var travelDate = new Date(dateOfTravel);*/
+        var offerMediumElem = currObj.find(".reservation-view");
+        var buttonHTML = offerMediumElem.find('.btn');
+
+        var target = this.getTarget(offerProdType);
+        if(!target && currObj.attr("data-newWindow")){
+            target = "_blank";
+        } else if(!target) {
+            target = "_top";
+        }
+
+        var temp = "";
+        var btnAria = title +' ';
+
+        if(offer['strategy'] && offer['strategy'].toLowerCase().indexOf('homebound') > 0){
+            temp = '<h4 aria-label="'+originCity+' '+destinationCity+'">'+ departureAirport +' - '+ arrivalAirport +'</h4>'
+                + '<h4 aria-label="'+returnDateString+'">'+returnDateString+'</h4>';
+            btnAria += originCity+' '+destinationCity+' '+returnDateString;
+
+        } else {
+            temp = '<h4 aria-label="'+originCity+' '+destinationCity+'">'+departureAirport +' - '+ arrivalAirport+'</h4>'
+                    + '<h4 aria-label="'+(dateOfTravelString || '')+'">'+(dateOfTravelString || '')+'</h4>';
+            btnAria += originCity+' '+destinationCity+' '+dateOfTravelString;
+        }
+
+        if(this.getReservationProductTypeFlag(offerProdType)) {
+             temp = '<h4 aria-label="'+destinationCity+'">'+destinationCity+'</h4>'
+                + '<h4 aria-label="'+dateOfTravelString+' '+returnDateString+'">'+dateOfTravelString+' - '+returnDateString+'</h4>';
+
+            btnAria += destinationCity+' '+dateOfTravelString+' '+returnDateString;
+        } else {
+            /*if(travelDate < new Date()){
+                temp = '<h4>'+arrivalAirport +' - '+ departureAirport+'</h4>'
+                + '<h4>'+returnDateString+'</h4>';
+            }*/
+        }
+
+        var snippet = "<h3 aria-label='"+title+"'><span class=''>"+title+"</span></h3>"
+        + temp;
+
+        if(offerProdType && offerProdType.toLowerCase() === "upgrade") {
+            buttonHTML.text(Granite.I18n.get("label-place-bid"));
+        }
+        buttonHTML.attr('data-url', url);
+        buttonHTML.attr('aria-label', (btnAria+' '+buttonHTML.text()));
+
+
+        offerMediumElem.empty();
+        offerMediumElem.append(snippet);
+        offerMediumElem.append(buttonHTML);
+        $(buttonHTML).click(function(event){window.open(url, target);});
+    },
+
+    doGet : function(url, requestData, successCallBack) {
+        var localeHeader = this.localeHeader();
+        var thisObj = this;
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data : requestData,
+            beforeSend : function(jqXHR, settings) {
+                jqXHR.setRequestHeader('Accept-Language', localeHeader);
+                jqXHR.setRequestHeader('Authorization', thisObj.getOAuthFromSession());
+            },
+            success : function(data, textStatus, jqXHR) {
+                successCallBack(data);
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+                console.log("Error fetching data for request : " +JSON.stringify(requestData) +", error thrown : "+ errorThrown);
+            }
+        });
+    },
+
+    doPostRequest : function(url, requestData, successCallBack, errorCallBack, syncFlag) {
+        var cachedOffer = this.getOfferFromSession(requestData);
+        if(cachedOffer && cachedOffer.offerInfo) {
+            var translatedData = cachedOffer;
+            for(var i=0; i<cachedOffer.offerInfo.length; i++){
+                var offer = cachedOffer.offerInfo[i]
+                translatedData.offerInfo[i] = this.applyInternationalization(offer);
+            }
+
+            successCallBack(translatedData);
+            return;
+        }
+
+        if(syncFlag){
+            this.doPostSync(url, requestData, successCallBack, errorCallBack);
+        } else {
+            this.doPost(url, requestData, successCallBack, errorCallBack);
+        }
+    },
+
+    doPostSync : function(url, requestData, successCallBack, errorCallBack) {
+        var localeHeader = this.localeHeader();
+        var thisObj = this;
+        $.ajax({
+            type : "POST",
+            url : url,
+            async : false,
+            contentType : "application/json",
+            data : requestData,
+            processData: false,
+            beforeSend : function(jqXHR, settings) {
+                jqXHR.setRequestHeader('Accept-Language', localeHeader);
+                jqXHR.setRequestHeader('Authorization', thisObj.getOAuthFromSession());
+                var exclude = thisObj.renderedOfferCodes.join(',');
+                settings.data.exclude = exclude;
+                settings.data = JSON.stringify(settings.data);
+            },
+            success : function(data, textStatus, jqXHR) {
+                if(data.offerInfo) {
+                    thisObj.storeOfferInSession(requestData, data);
+
+                    var translatedData = data;
+                    for(var i=0; i<data.offerInfo.length; i++){
+                        var offer = data.offerInfo[i]
+                        translatedData.offerInfo[i] = thisObj.applyInternationalization(offer);
+                    }
+                    successCallBack(translatedData);
+                } else {
+                    console.log("Error error in response : " +JSON.stringify(data));
+                    if(errorCallBack) {
+                        errorCallBack();
+                    }
+                }
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+                if(errorCallBack) {
+                    errorCallBack();
+                }
+                console.log("Error fetching data for request : " +JSON.stringify(requestData) +", error thrown : "+ errorThrown);
+            }
+        });
+    },
+
+    doPost : function(url, requestData, successCallBack, errorCallBack) {
+        var localeHeader = this.localeHeader();
+        var thisObj = this;
+        $.ajax({
+            type : "POST",
+            url : url,
+            async : true,
+            contentType : "application/json",
+            data : JSON.stringify(requestData),
+            beforeSend : function(jqXHR, settings) {
+                jqXHR.setRequestHeader('Accept-Language', localeHeader);
+                jqXHR.setRequestHeader('Authorization', thisObj.getOAuthFromSession());
+            },
+            success : function(data, textStatus, jqXHR) {
+                if(data.offerInfo) {
+                    thisObj.storeOfferInSession(requestData, data);
+
+                    var translatedData = data;
+                    for(var i=0; i<data.offerInfo.length; i++){
+                        var offer = data.offerInfo[i]
+                        translatedData.offerInfo[i] = thisObj.applyInternationalization(offer);
+                    }
+
+                    successCallBack(translatedData);
+                } else {
+                    console.log("Error error in response : " +JSON.stringify(data));
+                    if(errorCallBack) {
+                        errorCallBack();
+                    }
+                }
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+                if(errorCallBack) {
+                    errorCallBack();
+                }
+                console.log("Error fetching data for request : " +JSON.stringify(requestData) +", error thrown : "+ errorThrown);
+            }
+        });
+    },
+
+    applyInternationalization: function(data) {
+
+        if(data.shortTitle){
+            data.shortTitle = this.translateOfferTitle(data.shortTitle);
+        }
+
+        if(data.mediumTitle){
+            data.mediumTitle = this.translateOfferTitle(data.mediumTitle);
+        }
+
+        if(data.longTitle){
+            data.longTitle = this.translateOfferTitle(data.longTitle);
+        }
+
+        if(data.destinationCity){
+            data.destinationCity = this.translateCity(data.destinationCity);
+        }
+
+        if(data.originCity){
+            data.originCity = this.translateCity(data.originCity);
+        }
+
+        if(data.homeboundDateOfTravel){
+            var returnTravelDate = new Date(data.homeboundDateOfTravel);
+            data.homeboundDateOfTravelString = returnTravelDate.getDate() +" "+ this.translateMonth(returnTravelDate.getMonth());
+        }
+
+        if(data.outboundDateOfTravel){
+            var travelDate = new Date(data.outboundDateOfTravel);
+            data.outboundDateOfTravelString = travelDate.getDate() +" "+ this.translateMonth(travelDate.getMonth());
+        }
+
+        return data;
+    },
+
+    translateOfferTitle:function(keyString){
+
+        var key="title-";
+        keyString=keyString.trim().replace(/[^a-zA-Z0-9]+/g, "-");
+        var keyLower=keyString.toLowerCase();
+        var keyValue=Granite.I18n.get(key+keyLower);
+
+     return keyValue;
+
+    },
+
+    translateCity:function(keyMessage){
+
+        var key="city-";
+        var keyString=keyMessage.trim().replace(/\s+/g, "-");
+        var keyLower=keyString.toLowerCase();
+        var keyValue=Granite.I18n.get(key+keyLower);
+
+        return keyValue;
+
+    },
+
+    translateMonth:function(monthVal){
+
+        var keyValue = this.monthArray[parseInt(monthVal)];
+
+        return keyValue;
+    },
+
+    storeOfferInSession: function(key, val){
+        var temp = Object.keys(key).map(function(e) {
+          return key[e]
+        })
+        key = temp.sort().join().replace(/([ ,;-])/g,'');
+        if(!window.sessionStorage.offers){
+            window.sessionStorage.setItem('offers', JSON.stringify({}));
+        }
+        var offers = JSON.parse(window.sessionStorage.offers);
+        offers[key] = val;
+        window.sessionStorage.setItem('offers', JSON.stringify(offers));
+    },
+
+    getOfferFromSession: function(key){
+        if(window.sessionStorage.offers){
+            var temp = Object.keys(key).map(function(e) {
+              return key[e]
+            })
+            key = temp.sort().join().replace(/([ ,;-])/g,'');
+            return JSON.parse(window.sessionStorage.offers)[key];
+        } else {
+            return null;
+        }
+
+    },
+    
+    storeOfferImageInSession: function(key, offerCode, val){
+        var temp = Object.keys(key).map(function(e) {
+          return key[e]
+        })
+        key = temp.sort().join().replace(/([ ,;-])/g,'') + 'searchAssetResults.'+offerCode+'.json';
+        if(!window.sessionStorage.offerImage){
+            window.sessionStorage.setItem('offerImage', JSON.stringify({}));
+        }
+        var offerImage = JSON.parse(window.sessionStorage.offerImage);
+        offerImage[key] = val;
+        window.sessionStorage.setItem('offerImage', JSON.stringify(offerImage));
+    },
+
+    getOfferImageFromSession: function(key, offerCode){
+        if(window.sessionStorage.offerImage){
+            var temp = Object.keys(key).map(function(e) {
+              return key[e]
+            })
+            key = temp.sort().join().replace(/([ ,;-])/g,'') + 'searchAssetResults.'+offerCode+'.json';
+            return JSON.parse(window.sessionStorage.offerImage)[key];
+        } else {
+            return null;
+        }
+
+    },
+
+    getOAuthFromSession: function(){
+        return getOAuthCookie();
+    },
+
+    clearOfferFromSession: function(){
+        window.sessionStorage.setItem('offers', JSON.stringify({}));
+        window.sessionStorage.setItem('offerImage', JSON.stringify({}));
+    }
+};
+
+var personalisationDialogReservationObj = {
+    programTypeList : [],
+
+    strategyList : {},
+
+    productTypeList : {},
+
+    programFieldName : "./reservationProgramType",
+
+    strategyFieldName : "./reservationStrategy",
+
+    productTypeFieldName : "./reservationProductType",
+
+    programLoadEvent : function(comp){
+        personalisationDialogObj.programLoadEvent(comp, this);
+    },
+
+
+    programChangeEvent : function(comp,val) {
+        personalisationDialogObj.programChangeEvent(comp, val, this);
+    },
+
+    strategyLoadEvent : function(comp) {
+        personalisationDialogObj.strategyLoadEvent(comp, this);
+    },
+
+    strategyChangeEvent : function(comp,val) {
+        personalisationDialogObj.strategyChangeEvent(comp, val, this);
+    }
+};
+
+var personalisationDialogRecipientObj = {
+    programTypeList : [],
+
+    strategyList : {},
+
+    productTypeList : {},
+
+    programFieldName : "./programType",
+
+    strategyFieldName : "./strategy",
+
+    productTypeFieldName : "./productType",
+
+    programLoadEvent : function(comp){
+        personalisationDialogObj.programLoadEvent(comp, this);
+    },
+
+
+    programChangeEvent : function(comp,val) {
+        personalisationDialogObj.programChangeEvent(comp, val, this);
+    },
+
+    strategyLoadEvent : function(comp) {
+        personalisationDialogObj.strategyLoadEvent(comp, this);
+    },
+
+    strategyChangeEvent : function(comp,val) {
+        personalisationDialogObj.strategyChangeEvent(comp, val, this);
+    }
+};
+
+var personalisationDialogObj = {
+
+    getReservationCategories : function(){
+        var reservationCategoriesURL = getApiHost()+"/personalizedoffer/reservation/categories";
+
+        if(window.sessionStorage['categoriesListRes']){
+            var resObj = JSON.parse(window.sessionStorage['categoriesListRes']);
+            personalisationDialogReservationObj.programTypeList = resObj.programTypeList;
+            personalisationDialogReservationObj.strategyList = resObj.strategyList;
+            personalisationDialogReservationObj.productTypeList = resObj.productTypeList;
+        } else {
+            personalisationObj.doGet(reservationCategoriesURL, "", function(data){
+                if(data.categories){
+                    data.categories.forEach(function(item){
+                        if(personalisationDialogReservationObj.programTypeList.indexOf(item.program) < 0){
+                            personalisationDialogReservationObj.programTypeList.push(item.program);
+                            personalisationDialogReservationObj.strategyList[item.program] = ['None'];
+                        }
+                        if(personalisationDialogReservationObj.strategyList[item.program].indexOf(item.strategy) < 0){
+                            personalisationDialogReservationObj.strategyList[item.program].push(item.strategy);
+                            personalisationDialogReservationObj.productTypeList[item.strategy] = ['None'];
+                        }
+                        if(personalisationDialogReservationObj.productTypeList[item.strategy].indexOf(item.productType) < 0){
+                            personalisationDialogReservationObj.productTypeList[item.strategy].push(item.productType);
+                        }
+                    });
+                    window.sessionStorage.setItem('categoriesListRes', JSON.stringify(personalisationDialogReservationObj));
+                }
+            });
+        }
+    },
+
+    getRecipientCategories : function(){
+        var recipientCategoriesURL=getApiHost()+"/personalizedoffer/recipient/categories";
+
+        if(window.sessionStorage['categoriesListRec']){
+            var recObj = JSON.parse(window.sessionStorage['categoriesListRec']);
+            personalisationDialogRecipientObj.programTypeList = recObj.programTypeList;
+            personalisationDialogRecipientObj.strategyList = recObj.strategyList;
+            personalisationDialogRecipientObj.productTypeList = recObj.productTypeList;
+        } else {
+            personalisationObj.doGet(recipientCategoriesURL, "", function(data){
+                if(data.categories){
+                    data.categories.forEach(function(item){
+                        if(personalisationDialogRecipientObj.programTypeList.indexOf(item.program) < 0){
+                            personalisationDialogRecipientObj.programTypeList.push(item.program);
+                            personalisationDialogRecipientObj.strategyList[item.program] = ['None'];
+                        }
+                        if(personalisationDialogRecipientObj.strategyList[item.program].indexOf(item.strategy) < 0){
+                            personalisationDialogRecipientObj.strategyList[item.program].push(item.strategy);
+                            personalisationDialogRecipientObj.productTypeList[item.strategy] = ['None'];
+                        }
+                        if(personalisationDialogRecipientObj.productTypeList[item.strategy].indexOf(item.productType) < 0){
+                            personalisationDialogRecipientObj.productTypeList[item.strategy].push(item.productType);
+                        }
+                    });
+                    window.sessionStorage.setItem('categoriesListRec', JSON.stringify(personalisationDialogRecipientObj));
+                }
+            });
+        }
+    },
+
+    programLoadEvent : function(comp, obj){
+        var dlg = comp.findParentByType("dialog");
+        var contentData=CQ.HTTP.eval(CQ.HTTP.noCaching(dlg.path + '.infinity.json'));
+        var programType = dlg.getField(obj.programFieldName);
+        var programs = [];
+        obj.programTypeList.forEach(function(item){
+            var program = {};
+            program['text'] = item;
+            program['value'] = item;
+            programs.push(program);
+        });
+        programType.setOptions(programs);
+
+        var offerStrategy = dlg.getField(obj.strategyFieldName);
+        var productType = dlg.getField(obj.productTypeFieldName)
+        var val = programType.getValue();
+
+        if(val === ""){
+            if(contentData.programType){
+                val = contentData.programType;
+            } else {
+                val = obj.programTypeList[0];
+            }
+            programType.setValue(val);
+        }
+        //programType.doLayout();
+
+        if(obj.programTypeList.indexOf(val) >= 0){
+            offerStrategy.show();
+            var strategies = [];
+            obj.strategyList[val].forEach(function(item){
+                var strategy = {};
+                strategy['text'] = item;
+                strategy['value'] = item;
+                strategies.push(strategy);
+            });
+
+            offerStrategy.setOptions(strategies);
+            offerStrategy.doLayout();
+        } else {
+            offerStrategy.hide();
+            offerStrategy.setValue('');
+            productType.hide();
+            productType.setValue('');
+        }
+    },
+
+    programChangeEvent : function(comp,val, obj) {
+        var dlg = comp.findParentByType("dialog");
+        var offerStrategy = dlg.getField(obj.strategyFieldName);
+        var productType = dlg.getField(obj.productTypeFieldName);
+
+        if(obj.programTypeList.indexOf(val) >= 0){
+            offerStrategy.show();
+            offerStrategy.setValue('');
+            productType.hide();
+            productType.setValue('');
+
+            var strategies = [];
+            obj.strategyList[val].forEach(function(item){
+                var strategy = {};
+                strategy['text'] = item;
+                strategy['value'] = item;
+                strategies.push(strategy);
+            });
+
+            offerStrategy.setOptions(strategies);
+            offerStrategy.doLayout();
+            productType.doLayout();
+        }else{
+            offerStrategy.hide();
+            offerStrategy.setValue('');
+            productType.hide();
+            productType.setValue('');
+        }
+    },
+
+    strategyLoadEvent : function(comp, obj) {
+        var dlg = comp.findParentByType("dialog");
+        var offerStrategy = dlg.getField(obj.strategyFieldName);
+        var offerProductType = dlg.getField(obj.productTypeFieldName);
+
+        if(offerStrategy.value && offerStrategy.value !== ""){
+            offerProductType.show();
+            var productTypes = [];
+            obj.productTypeList[offerStrategy.value].forEach(function(item){
+                var productType = {};
+                productType['text'] = item;
+                productType['value'] = item;
+                productTypes.push(productType);
+            });
+
+            offerProductType.setOptions(productTypes);
+            offerProductType.doLayout();
+
+        } else {
+            offerProductType.hide();
+            offerProductType.setValue('');
+        }
+    },
+
+     strategyChangeEvent : function(comp,val, obj) {
+        var dlg = comp.findParentByType("dialog");
+        var offerProductType = dlg.getField(obj.productTypeFieldName);
+
+        if(Object.keys(obj.productTypeList).indexOf(val) > -1){
+            offerProductType.show();
+
+            var productTypes = [];
+            obj.productTypeList[val].forEach(function(item){
+                var productType = {};
+                productType['text'] = item;
+                productType['value'] = item;
+                productTypes.push(productType);
+            });
+
+            offerProductType.setValue('');
+            offerProductType.setOptions(productTypes);
+            offerProductType.doLayout();
+
+        } else {
+            offerProductType.hide();
+            offerProductType.setValue('');
+        }
+    }
+};
+
+$(document).on( "userSignedIn", function( event) {
+
+    var customerDNAUrl=getApiHost()+"personalizedoffer/customerdna";
+    var ssoCookie=getSSOCookie();
+    var ssoCookieArr=ssoCookie.split(',');
+    var tokenArr=ssoCookieArr[0].split('=');
+    var customerId=tokenArr[1];
+
+    $.ajax({
+        type: "POST",
+        url: customerDNAUrl,
+        data:JSON.stringify({
+            "transactionId": "",
+            "customerId": customerId
+        }),
+        contentType: "application/json",
+        beforeSend : function(jqXHR, settings) {
+            jqXHR.setRequestHeader('Authorization', personalisationObj.getOAuthFromSession());
+        },
+        success: function(data) {
+            var pnr=data.upcomingBookingPnr || "";
+            var dnaDta=(data.tribe || "")+","+pnr+","+customerId;
+            writeCustomerDNACookie(dnaDta);
+            personalisationTribesObj.showPage();
+            $(document).trigger("customerDnaAvailable");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            $(document).trigger("customerDnaAvailable");
+            console.log("Personalisation : customer dna : Error fetching data : "+errorThrown+""+textStatus);
+        }
+    });
+
+});
+
+$( document ).on( "userSignedOut", function( event ) {
+    personalisationObj.clearOfferFromSession();
+});
+
+if(document.cookie.indexOf("cq-authoring-mode")) {
+    $(document).on("ready", function(event, newOriginCode) {
+        Granite.I18n.setLocale(getLocale());
+        personalisationObj.renderedOfferCodes = [];
+        personalisationObj.newOriginCode = newOriginCode;
+        if(window.reservationOfferComponent) reservationOfferComponent.initReservationOffer();
+        if(window.offerSalesComponent) offerSalesComponent.initOfferSales();
+        if(window.reservationOfferSmallComponent) reservationOfferSmallComponent.initReservationOfferSmall();
+        if(window.offerSalesSmallComponent) offerSalesSmallComponent.initOfferSalesSmall();
+        if(window.groupedReservationComponent) groupedReservationComponent.initGroupedReservation();
+        if(window.groupedOfferSalesComponent) groupedOfferSalesComponent.initGroupedOfferSales();
+        //checkinMobileComponent.init();
+        //checkinComponent.init();
+
+        /*if($(".reservation-small-wrapper, .reservation-wrapper, .offer-sales-small-wrapper, .offer-sales-wrapper, .grouped-reservation-wrapper, .grouped-offer-sales-wrapper").length > 0){
+            if(personalisationDialogReservationObj.programTypeList.length == 0){
+                personalisationDialogObj.getReservationCategories();
+            }
+            if(personalisationDialogRecipientObj.programTypeList.length == 0){
+                personalisationDialogObj.getRecipientCategories();
+            }
+        }*/
+    });
+}
+
+var categoriesApiCalled = false;
+function loadCategories(){
+    if(document.cookie.indexOf("cq-authoring-mode") && !categoriesApiCalled) {
+        categoriesApiCalled = true;
+        if($(".reservation-small-wrapper, .reservation-wrapper, .offer-sales-small-wrapper, .offer-sales-wrapper, .grouped-reservation-wrapper, .grouped-offer-sales-wrapper").length > 0){
+            if(personalisationDialogReservationObj.programTypeList.length === 0){
+                personalisationDialogObj.getReservationCategories();
+            }
+            if(personalisationDialogRecipientObj.programTypeList.length === 0){
+                personalisationDialogObj.getRecipientCategories();
+            }
+        }
+    }
+}
+
+/* end of common script */
+/* start of reservation widget */
+
+var reservationOfferComponent = {
+
+    initReservationOffer : function() {
+        var thisObj = this;
+
+        $(".reservation-wrapper")
+            .each(
+                function() {
+                    var currObj = $(this);
+                    var defaultOfferElem = null;
+
+                    var pnrNumber = personalisationObj.getPnrFromCookie();
+
+                    if(pnrNumber && currObj.find(".reservation-component").length > 0){
+                        defaultOfferElem = currObj.find(".offer-sales-component");
+                        currObj.find(".offer-sales-component").remove();
+                        currObj = currObj.find(".reservation-component");
+                        currObj[0] && (currObj[0].style.display = 'block');
+                    }else{
+                        currObj.find(".reservation-component").remove();
+                        currObj = currObj.find(".offer-sales-component");
+                        currObj[0].style.display = 'block';
+                    }
+
+                    var elem = currObj.find('.btn');
+                    var urlVal = $(elem[0]).attr('data-url');
+                    var target = "_top";
+                    if(currObj.attr("data-newWindow")){
+                        target = "_blank";
+                    }
+                    $(elem).click(function(event){window.open(urlVal, target);});
+
+                    var requestData = personalisationObj.getRequestData(currObj, pnrNumber);
+
+                    if(!requestData && pnrNumber && defaultOfferElem){
+                        currObj.replaceWith(defaultOfferElem);
+                        currObj = defaultOfferElem;
+                        currObj[0].style.display = 'block';
+                    }
+
+                    var hasBgColor = currObj.attr("data-bgcolor");
+                    var isTextBgColor = currObj.attr("data-textBgColor");
+                    
+                    if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                        personalisationObj.setBackgroundImg($(this));
+                        if(hasBgColor && isTextBgColor){
+                            personalisationObj.setTextBgColor(currObj);
+                        }
+                    }
+
+                    if (requestData) {
+
+                        function renderResponse(data) {
+
+                            var offer = data.offerInfo[0];
+                            personalisationObj.isDuplicateOfferCode(offer["offerCode"]);
+
+                            if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                                personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                            }
+                            
+                            if( pnrNumber ) {
+
+                                personalisationObj.setReservationView( currObj, offer);
+
+                            } else { 
+                                
+                                personalisationObj.setSingleOfferView( currObj, offer);
+
+                            }
+
+                            if(hasBgColor && isTextBgColor){
+                                personalisationObj.setTextBgColor(currObj);
+                            }
+                        }
+
+                        function handleError(){
+
+                            if(pnrNumber && defaultOfferElem){
+                                currObj.replaceWith(defaultOfferElem);
+                                currObj = defaultOfferElem;
+                                var hasBgColor = currObj.attr("data-bgcolor");
+                                var isTextBgColor = currObj.attr("data-textBgColor");
+                                var elem = currObj.find('.btn');
+                                var urlVal = $(elem[0]).attr('data-url');
+                                var target = "_top";
+                                if(currObj.attr("data-newWindow")){
+                                    target = "_blank";
+                                }
+
+                                currObj[0].style.display = 'block';
+                                
+                                $(elem).click(function(event){window.open(urlVal, target);});
+
+                                if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                                    personalisationObj.setBackgroundImg(currObj.parent());
+                                    if(hasBgColor && isTextBgColor){
+                                        personalisationObj.setTextBgColor(currObj);
+                                    }
+                                }
+
+                                var newRequestData = personalisationObj.getRequestData(currObj, '');
+
+                                if(newRequestData){
+
+                                    function renderFallBackResponse(data) {
+
+                                        var offer = data.offerInfo[0];
+                                        personalisationObj.isDuplicateOfferCode(offer["offerCode"]);
+
+                                        if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                                            personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                                        }
+                                            
+                                        personalisationObj.setSingleOfferView( currObj, offer);
+
+                                        if(hasBgColor && isTextBgColor){
+                                            personalisationObj.setTextBgColor(currObj);
+                                        }
+                                    }
+
+                                    function handleFallBackError(){
+                                    }
+
+                                    personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), newRequestData, renderFallBackResponse, handleFallBackError, currObj.attr("data-sync"));
+                                }
+
+                            }
+                        }
+
+                        personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), requestData, renderResponse, handleError, currObj.attr("data-sync"));
+
+                    }
+        });
+    }
+}
+/** * Start of Offer Sales campaigns * */
+
+var offerSalesComponent = {
+
+    initOfferSales : function() {
+        var thisObj = this;
+
+        $(".offer-sales-wrapper")
+        .each(
+            function() {
+                var currObj = $(this);
+
+                var target = "_top";
+                if(currObj.attr("data-newWindow")){
+                    target = "_blank";
+                }
+				
+                var maxOffers = currObj.attr("data-maxOffer");
+                if (maxOffers > 1) {
+                    var listItems = currObj.find('.destination-details li');
+                    for(var i=0; i<listItems.length; i++){
+                        var urlVal = $(listItems[i]).attr('data-url')
+                        if(urlVal){
+                            listItems[i].addEventListener("click",function(event){window.open(urlVal, target);} , false);
+                        }
+                    }
+                } else if (maxOffers === 1) {
+                    var elem = currObj.find('.btn');
+                    var urlVal = $(elem[0]).attr('data-url')
+                    $(elem).click(function(event){window.open(urlVal, target);});
+                }
+              
+
+                var requestData = personalisationObj.getRequestData(currObj, "");
+
+                var hasBgColor = currObj.attr("data-bgcolor");
+                var isTextBgColor = currObj.attr("data-textBgColor");
+                    
+                if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                    personalisationObj.setBackgroundImg(currObj);
+                    if(hasBgColor && isTextBgColor){
+                        personalisationObj.setTextBgColor(currObj);
+                    }
+                }
+
+                if (requestData) {
+
+                    function renderResponse(data) {
+
+                        var isFirstOffer = true;
+                        var maxOffers = currObj.attr("data-maxOffer");
+
+                        for(var count=0; count<data.offerInfo.length; count++) {
+                            var offer = data.offerInfo[count];
+
+                            if(maxOffers === count) {
+
+                                if(hasBgColor && isTextBgColor){
+                                    personalisationObj.setTextBgColor(currObj);
+                                }
+
+                                break;
+                            }
+
+                            personalisationObj.isDuplicateOfferCode(offer["offerCode"])
+
+                            if(isFirstOffer) {
+                                isFirstOffer = false;
+                                if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                                    personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                                }
+
+                                if (maxOffers > 1) {
+
+                                    var tripTypeValueMultiOffer = personalisationObj.getTripType(currObj.attr("data-tripType"));
+
+                                    currObj.find(".inner h2").text(offer['mediumTitle'] || offer['shortTitle']);
+                                    currObj.find(".inner h2").attr('aria-label',offer['mediumTitle'] || offer['shortTitle']);
+
+                                    var destinationDetails = currObj.find(".destination-details");
+                                    destinationDetails.empty();
+
+                                    var snippet = '<li class="campaign-label" tabindex="0" aria-label="'+ offer['originCity'] + ' ' + tripTypeValueMultiOffer + '">'
+                                    + '<div class="pull-left">'
+                                    + offer['originCity'] 
+                                    + '</div>'
+                                    + '<div class="pull-right">'
+                                    + tripTypeValueMultiOffer
+                                    + '</div></li>';
+
+                                    destinationDetails.append(snippet);
+                                }
+
+                            }
+                            
+                            if (maxOffers > 1) {
+
+                                thisObj.setMultiOfferView( currObj, offer);
+
+                            } else if (maxOffers === 1) {
+
+                                personalisationObj.setSingleOfferView( currObj, offer);
+
+                            }
+                        }
+                        if(hasBgColor && isTextBgColor){
+                            personalisationObj.setTextBgColor(currObj);
+                        }
+                    }
+
+                    function handleError(){
+                    }
+
+                    personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), requestData, renderResponse, handleError, currObj.attr("data-sync"));
+
+                }
+
+        });
+    },
+
+    setMultiOfferView : function(currObj, offer){
+        currObj.attr("data-propositionId", offer['propositionId']);
+
+        var formattedPrice=Granite.I18n.get("aem.commons.book-label");
+                                
+        if(offer["price"] && parseInt(offer["price"])){
+            formattedPrice = offer["price"] +' '+ (offer["currency"] || "");
+        }
+
+        var title = (offer["mediumTitle"] || offer['shortTitle']);
+        var offerProdType = offer["offerProdType"];
+        var destinationCity = offer["destinationCity"];
+
+        var destinationDetails = currObj.find(".destination-details");
+
+        var snippet = '<li role="link" tabindex="0" aria-label="'+destinationCity+' '+formattedPrice+'">'
+        + '<div class="pull-left">'
+        + destinationCity 
+        + '</div>'
+        + '<div class="pull-right">'
+        + formattedPrice
+        + '</div></li>';
+
+        var snippet = $(snippet).click(function(event){personalisationObj.onOfferClick(event,offer);});
+
+        destinationDetails.append(snippet);
+    }
+}
+/** * Start of Grouped reservation campaigns * */
+
+var groupedReservationComponent = {
+    defaultOfferElem : {},
+    initGroupedReservation : function() {
+        var thisObj = this;
+        $(".grouped-reservation-wrapper")
+        .each(
+            function() {
+                var offerCount = $(this).attr("data-offer-count");
+                for(var x=1; x <= offerCount; x++){
+                    var obj = $(this).find(".col.grp-column-"+x);
+                    thisObj.defaultOfferElem[x] = obj.find(".offer-sales-component");
+                    thisObj.renderOffer(obj, $(this));
+                }
+                thisObj.callReservationOffer($(this));
+        });
+    },
+
+    renderOffer : function(currObj, parentObj) {
+
+        var pnrNumber = personalisationObj.getPnrFromCookie();
+        var newObj = "";
+
+        if(pnrNumber && currObj.find(".reservation-component").length > 0){
+            currObj.find(".offer-sales-component").remove();
+            newObj = currObj.find(".reservation-component");
+
+            newObj[0].style.display = 'block';
+        }else{
+            currObj.find(".reservation-component").remove();
+            newObj = currObj.find(".offer-sales-component");
+
+            newObj[0].style.display = 'block';
+        }
+
+        var displayType = newObj.attr("data-display-type");
+
+        if(displayType === "small"){
+            parentObj[0].style.height = "180px";
+        }
+        var hasBgColor = newObj.attr("data-bgcolor");
+        var isTextBgColor = newObj.attr("data-textBgColor");
+        if(!hasBgColor || (hasBgColor && isTextBgColor)){
+            personalisationObj.setBackgroundImg(currObj);
+            if(hasBgColor && isTextBgColor){
+                personalisationObj.setTextBgColor(newObj);
+            }
+        }
+    },
+
+    callReservationOffer : function(wrapperObj){
+        this.callOffer(wrapperObj, true);
+    },
+
+    callRecipientOffer : function(wrapperObj){
+        this.callOffer(wrapperObj, false);
+    },
+    callOffer : function(wrapperObj, pnrFlag) {
+
+        var thisObj = this;
+        var pnrNumber = personalisationObj.getPnrFromCookie();
+
+        if(!pnrFlag){
+            pnrNumber = '';
+        }
+
+        var currObjClassName = "";
+        if(pnrNumber){
+            currObjClassName = " .reservation-component";
+        }else{
+            currObjClassName = " .offer-sales-component";
+        }
+
+        var firstObj = wrapperObj.find(".col.grp-column-1 "+currObjClassName);
+        if(firstObj.length === 0){
+            firstObj = wrapperObj.find(".col.grp-column-1 .offer-sales-component");
+        }
+        var displayType = firstObj.attr("data-display-type");
+        var requestData = personalisationObj.getRequestData(firstObj, pnrNumber);
+        var offerCount = wrapperObj.attr("data-offer-count");
+
+        function renderResponse(data) {
+
+            for(var count=0; (count < data.offerInfo.length && count < offerCount); count++) {
+                var offer = data.offerInfo[count];
+
+                personalisationObj.isDuplicateOfferCode(offer["offerCode"])
+
+                var currObj = wrapperObj.find(".col.grp-column-"+(count+1)+currObjClassName);
+                var hasBgColor = currObj.attr("data-bgcolor");
+                var isTextBgColor = currObj.attr("data-textBgColor");
+
+                if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                    personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                }
+
+                if(displayType === "medium") {
+
+                    if( pnrNumber ) {
+
+                         personalisationObj.setReservationView( currObj, offer);
+
+                    } else {
+
+                        personalisationObj.setSingleOfferView( currObj, offer);
+
+                    }
+
+                } else if(displayType === "small") {
+
+                    var elem = currObj.find("a");
+                    elem[0].title = offer["shortTitle"];
+
+                    if(pnrNumber && currObj.find(".reservation-row") && currObj.find(".reservation-row").length > 0){
+
+                        currObj.find(".reservation-small h3").text(offer["shortTitle"]);
+                        currObj.find(".reservation-small h4") && currObj.find(".reservation-small h4").text(offer["destinationCity"]);
+                        var journey = offer["departureAirport"]+" - "+offer["arrivalAirport"];
+                        var journeyAria = offer["originCity"]+" "+offer["destinationCity"];
+
+                        var travelDate = new Date(offer["outboundDateOfTravel"]);
+                        var dateString = offer["outboundDateOfTravelString"];
+                        var returnDateString = offer["homeboundDateOfTravelString"];
+
+                        if(offer['strategy'] && offer['strategy'].toLowerCase().indexOf('homebound') > 0){
+                            dateString = returnDateString;
+                        }
+
+                        if(personalisationObj.getReservationProductTypeFlag(offer['offerProdType'])) {
+                            journey = offer["destinationCity"];
+                            journeyAria = offer["destinationCity"];
+                            dateString += " - "+returnDateString;
+                        }
+                        currObj.find(".reservation-row h4")[0].innerHTML = journey;
+                        currObj.find(".reservation-row h4")[0].className = 'large-6 small-6 medium-6 col';
+                        currObj.find(".reservation-row h4")[1].innerHTML = dateString;
+                        currObj.find(".reservation-row h4")[1].className = 'large-6 small-6 medium-6 col';
+
+                        elem[0].href = offer["cta"];
+                        if(currObj.find(".reservation-row").length > 0){
+                            elem.attr("aria-label",(offer["shortTitle"] +' '+ journeyAria +' '+dateString));
+                        } else {
+                            elem.attr("aria-label",(offer["shortTitle"] +' '+ offer["destinationCity"]));
+                        }
+
+                        var target = personalisationObj.getTarget(offer["offerProdType"]);
+                        if(target){
+                            elem[0].target = target;
+                        }
+                    } else {
+                        currObj.find(".offer-small h3").text(offer["shortTitle"]);
+                        currObj.find(".offer-small h4") && currObj.find(".offer-small h4").text(offer["destinationCity"]);
+                        if(offer["program"].toLowerCase() === "onboarding") {
+                            currObj.find(".offer-small h4").text("");
+                        }
+
+                        $(elem).click(function(event){personalisationObj.onOfferClick(event,offer);});
+						elem[0].href = offer["cta"];
+                        elem.attr("aria-label",elem.text().trim());
+                    }
+
+                }
+
+                if(hasBgColor && isTextBgColor){
+                    personalisationObj.setTextBgColor(currObj);
+                }
+            }
+        }
+
+        function handleError(){
+
+            if(pnrNumber){
+                for(x=1; x <= offerCount; x++){
+                    var obj = wrapperObj.find(".col.grp-column-"+x);
+                    if(obj.find(".reservation-component").length > 0){
+                        var newObj = obj.find(".reservation-component");
+                        var displayType = newObj.attr("data-display-type");
+                        if(thisObj.defaultOfferElem[x]){
+                            thisObj.defaultOfferElem[x][0].style.display = "block"
+                            obj.find(".reservation-component").replaceWith(thisObj.defaultOfferElem[x]);
+							var elem = thisObj.defaultOfferElem[x].find('.btn');
+                            var urlVal = $(elem[0]).attr('data-url');
+                            var target = "_top";
+                            if(thisObj.defaultOfferElem[x].attr("data-newWindow")){
+                                target = "_blank";
+                            }
+                            $(elem).click(function(event){window.open(urlVal, target);});
+                        }
+
+                        if(displayType === "small"){
+                            wrapperObj[0].style.height = "180px";
+                        }
+                        var hasBgColor = newObj.attr("data-bgcolor");
+                        var isTextBgColor = newObj.attr("data-textBgColor");
+                        if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                            personalisationObj.setBackgroundImg(obj);
+                            if(hasBgColor && isTextBgColor){
+                                personalisationObj.setTextBgColor(newObj);
+                            }
+                        }
+                    }
+                }
+
+                thisObj.callRecipientOffer(wrapperObj);
+            }
+        }
+        if (requestData) {
+            personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), requestData, renderResponse, handleError, firstObj.attr("data-sync"));
+        } else {
+            handleError();
+        }
+    }
+}
+
+/** * Start of Grouped Offer Sales campaigns * */
+
+var groupedOfferSalesComponent = {
+
+    initGroupedOfferSales : function() {
+        var thisObj = this;
+        $(".grouped-offer-sales-wrapper")
+        .each(
+            function() {
+                var offerCount = $(this).attr("data-offer-count");
+                for(var x=1; x <= offerCount; x++){
+                    var obj = $(this).find(".col.grp-column-"+x);
+                    thisObj.renderOffer(obj, $(this));
+                }
+                thisObj.callOffer($(this));
+        });
+    },
+
+    renderOffer : function(currObj, parentObj) {
+        var innerElem = currObj.find('.inner');
+        var displayType = innerElem.attr("data-display-type");
+
+        if(displayType === "small"){
+            parentObj[0].style.height = "180px";
+        }
+        var hasBgColor = innerElem.attr("data-bgcolor");
+        var isTextBgColor = innerElem.attr("data-textBgColor");
+        if(!hasBgColor || (hasBgColor && isTextBgColor)){
+            personalisationObj.setBackgroundImg(currObj);
+            if(hasBgColor && isTextBgColor){
+                personalisationObj.setTextBgColor(innerElem);
+            }
+        }
+    },
+    callOffer : function(wrapperObj) {
+        var thisObj = this;
+        var firstObj = wrapperObj.find(".col.grp-column-1 .inner");
+        var displayType = firstObj.attr("data-display-type");
+        var requestData = personalisationObj.getRequestData(firstObj, "");
+
+        function renderResponse(data) {
+            var offerCount = wrapperObj.attr("data-offer-count");
+
+            for(var count=0; (count < data.offerInfo.length && count < offerCount); count++) {
+                var offer = data.offerInfo[count];
+
+                personalisationObj.isDuplicateOfferCode(offer["offerCode"])
+
+                var tripTypeValue = personalisationObj.getTripType(offer["tripType"]);
+                var currObj = wrapperObj.find(".col.grp-column-"+(count+1) + " .inner");
+
+                var hasBgColor = currObj.attr("data-bgcolor");
+                var isTextBgColor = currObj.attr("data-textBgColor");
+
+                if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                    personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                }
+
+                if(displayType === "medium"){
+                    personalisationObj.setSingleOfferView( currObj, offer);
+
+                }else if(displayType === "small"){
+                    currObj.attr("data-propositionId", offer['propositionId']);
+
+                    currObj.find(".offer-small h3").text(offer["shortTitle"]);
+                    currObj.find(".offer-small h4") && currObj.find(".offer-small h4").text(offer["destinationCity"]);
+                    if(offer["program"].toLowerCase() === "onboarding") {
+                        currObj.find(".offer-small h4").text("");
+                    }
+
+                    var elem = currObj.find("a");
+
+                    $(elem).click(function(event){personalisationObj.onOfferClick(event,offer);});
+                    elem[0].title = offer["shortTitle"];
+					elem[0].href = offer["cta"];
+                    elem.attr("aria-label",elem.text().trim());
+                }
+
+                if(hasBgColor && isTextBgColor){
+                    personalisationObj.setTextBgColor(currObj);
+                }
+            }
+        }
+
+        function handleError() {
+
+        }
+
+        if (requestData) {
+            personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), requestData, renderResponse, handleError, firstObj.attr("data-sync"));
+        }
+    }
+}
+
+/* start of reservation small widget */
+
+var reservationOfferSmallComponent = {
+    initReservationOfferSmall : function() {
+        $(".reservation-small-wrapper")
+        .each(
+            function() {
+                var currObj = $(this);
+                var defaultOfferElem = null;
+
+                var pnrNumber = personalisationObj.getPnrFromCookie();
+
+                if(pnrNumber && currObj.find(".reservation-small-component").length > 0){
+                    defaultOfferElem = currObj.find(".offer-sales-small-component");
+                    currObj.find(".offer-sales-small-component").remove();
+                    currObj = currObj.find(".reservation-small-component");
+                    currObj[0] && (currObj[0].style.display = 'block');
+                }else{
+                    currObj.find(".reservation-small-component").remove();
+                    currObj = currObj.find(".offer-sales-small-component");
+                    currObj[0].style.display = 'block';
+                }
+
+                var requestData = personalisationObj.getRequestData(currObj, pnrNumber);
+
+                if(!requestData && pnrNumber && defaultOfferElem){
+                    currObj.replaceWith(defaultOfferElem);
+                    currObj = defaultOfferElem;
+                    currObj[0].style.display = 'block';
+                }
+
+                var hasBgColor = currObj.attr("data-bgcolor");
+                var isTextBgColor = currObj.attr("data-textBgColor");
+
+                if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                    personalisationObj.setBackgroundImg($(this));
+                    if(hasBgColor && isTextBgColor){
+                        personalisationObj.setTextBgColor(currObj);
+                    }
+                }
+
+                if (requestData) {
+
+                    function renderResponse(data) {
+                        var offer = data.offerInfo[0];
+                        personalisationObj.isDuplicateOfferCode(offer["offerCode"]);
+
+                        currObj.attr("data-propositionId", offer['propositionId']);
+
+                        if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                            personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                        }
+
+                        var elem = currObj.find("a");
+                        //elem[0].title = offer["shortTitle"];
+
+                        if(pnrNumber && currObj.find(".reservation-row") && currObj.find(".reservation-row").length > 0){
+
+                            currObj.find(".reservation-small-view h3").text(offer["shortTitle"]);
+                            currObj.find(".reservation-small-view h4") && currObj.find(".reservation-small-view h4").text(offer["destinationCity"]);
+
+                            var journey = offer["departureAirport"]+" - "+offer["arrivalAirport"];
+                            var journeyAria = offer["originCity"]+" "+offer["destinationCity"];
+
+                            var travelDate = new Date(offer["outboundDateOfTravel"]);
+                            var dateString = offer["outboundDateOfTravelString"];
+                            var returnDateString = offer["homeboundDateOfTravelString"];
+
+                            if(offer['strategy'] && offer['strategy'].toLowerCase().indexOf('homebound') > 0){
+                                dateString = returnDateString;
+                            }
+
+                            if(personalisationObj.getReservationProductTypeFlag(offer['offerProdType'])) {
+                                journey = offer["destinationCity"];
+                                journeyAria = offer["destinationCity"];
+                                dateString += " - "+returnDateString;
+                            } else {
+                                /*if(travelDate < new Date()){
+                                    journey = offer["arrivalAirport"]+" - "+offer["departureAirport"];
+                                    journeyAria = offer["destinationCity"]+" - "+offer["originCity"];
+                                    dateString = returnDateString;
+                                }*/
+                            }
+
+                            currObj.find(".reservation-row h4")[0].innerHTML = journey;
+                            currObj.find(".reservation-row h4")[0].className = 'large-6 small-6 medium-6 col';
+                            currObj.find(".reservation-row h4")[1].innerHTML = dateString;
+                            currObj.find(".reservation-row h4")[1].className = 'large-6 small-6 medium-6 col';
+
+                            elem[0].href = offer["cta"];
+
+                            if(currObj.find(".reservation-row").length > 0){
+                                elem.attr("aria-label",(offer["shortTitle"] +' '+ journeyAria +' '+dateString));
+                            } else {
+                                elem.attr("aria-label",(offer["shortTitle"] +' '+ offer["destinationCity"]));
+                            }
+
+
+                            var target = personalisationObj.getTarget(offer["offerProdType"]);
+                            if(target){
+                                elem[0].target = target;
+                            }
+                        } else {
+                            
+                            currObj.find(".offer-small h3").text(offer["shortTitle"]);
+                            currObj.find(".offer-small h4") && currObj.find(".offer-small h4").text(offer["destinationCity"]);
+                            if(offer["program"].toLowerCase() === "onboarding") {
+                                currObj.find(".offer-small h4").text("");
+                            }
+
+                            $(elem).click(function(event){personalisationObj.onOfferClick(event,offer);});
+							elem[0].href = offer["cta"];
+                            elem.attr("aria-label",elem.text().trim());
+                        }
+
+
+                        if(hasBgColor && isTextBgColor){
+                            personalisationObj.setTextBgColor(currObj);
+                        }
+                    }
+
+                    function handleError(){
+                        if(pnrNumber && defaultOfferElem){
+                            currObj.replaceWith(defaultOfferElem);
+                            currObj = defaultOfferElem;
+                            currObj[0].style.display = 'block';
+
+                            var hasBgColor = currObj.attr("data-bgcolor");
+                            var isTextBgColor = currObj.attr("data-textBgColor");
+                            
+                            if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                                personalisationObj.setBackgroundImg(currObj.parent());
+                                if(hasBgColor && isTextBgColor){
+                                    personalisationObj.setTextBgColor(currObj);
+                                }
+                            }
+
+
+                            var newRequestData = personalisationObj.getRequestData(currObj, '');
+
+                            if(newRequestData){
+
+                                function renderFallBackResponse(data) {
+
+                                    var offer = data.offerInfo[0];
+                                    personalisationObj.isDuplicateOfferCode(offer["offerCode"]);
+
+                                    currObj.attr("data-propositionId", offer['propositionId']);
+
+                                    if(!hasBgColor || (hasBgColor && isTextBgColor)){
+                                        personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                                    }
+
+                                    currObj.find(".offer-small h3").text(offer["shortTitle"]);
+                                    currObj.find(".offer-small h4") && currObj.find(".offer-small h4").text(offer["destinationCity"]);
+                                    if(offer["program"].toLowerCase() === "onboarding") {
+                                        currObj.find(".offer-small h4").text("");
+                                    }
+
+                                    var elem = currObj.find("a");
+
+                                    $(elem).click(function(event){personalisationObj.onOfferClick(event,offer);});
+									elem[0].href = offer["cta"];
+                                    elem.attr("aria-label",elem.text().trim());
+
+                                    
+                                    if(hasBgColor && isTextBgColor){
+                                        personalisationObj.setTextBgColor(currObj);
+                                    }
+                                }
+
+                                function handleFallBackError(){
+                                }
+
+
+                                personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), newRequestData, renderFallBackResponse, handleFallBackError, currObj.attr("data-sync"));
+                            }
+
+                        }
+                    }
+
+                    personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), requestData, renderResponse, handleError, currObj.attr("data-sync"));
+
+                }
+        });
+    }
+}
+/* start of small offer widget */
+
+var offerSalesSmallComponent = {
+	initOfferSalesSmall : function() {
+		$(".offer-sales-small-wrapper")
+		.each(
+			function() {
+				var currObj = $(this);
+
+				var requestData = personalisationObj.getRequestData(currObj, "");
+
+                var hasBgColor = currObj.attr("data-bgcolor");
+
+                if(!hasBgColor){
+                    personalisationObj.setBackgroundImg(currObj);
+                }
+
+				if (requestData) {
+
+					function renderResponse(data) {
+
+						var offer = data.offerInfo[0];
+                        personalisationObj.isDuplicateOfferCode(offer["offerCode"]);
+
+                        currObj.attr("data-propositionId", offer['propositionId']);
+
+						if(!hasBgColor){
+							personalisationObj.getPersonalisationImgPath(offer["offerCode"], currObj);
+                        }
+
+                        currObj.find(".offer-small h3").text(offer["shortTitle"]);
+                        currObj.find(".offer-small h4") && currObj.find(".offer-small h4").text(offer["destinationCity"]);
+                        if(offer["program"].toLowerCase() === "onboarding") {
+				            currObj.find(".offer-small h4").text("");
+				        }
+
+				        var elem = currObj.find("a");
+
+						$(elem).click(function(event){personalisationObj.onOfferClick(event,offer);});
+
+						elem[0].href = offer["cta"];
+                        elem.attr("aria-label",elem.text().trim());
+
+					}
+
+					function handleError() {
+
+					}
+
+					personalisationObj.doPostRequest(personalisationObj.offerServiceURL(), requestData, renderResponse, handleError, currObj.attr("data-sync"));
+
+				}
+			}
+		);
+	}
+}
+var ajaxTrackerFlag = true;
+var headerTrackerFlag = true;
+$(document).ready(function() {
+    if(document.cookie.indexOf("cq-authoring-mode")<0) {
+        if(headerTrackerFlag){
+            headerTracker();
+            headerTrackerFlag = false;
+        }
+        if($('.banner-holder').length > 0 && $('.personalisation-wrapper').length === 0 && $('.multiple-destination-campaign').length === 0 ){
+            if(ajaxTrackerFlag){
+                bannerTracker();
+                ajaxTrackerFlag = false;
+            }
+        } else {
+            $( document ).ajaxStop(function() {
+                if(ajaxTrackerFlag){
+                    bannerTracker();
+                    ajaxTrackerFlag = false;
+                }
+            });
+        }
+    }
+});
+
+//Header related GTM tracking
+function GTMtrackInteraction(category,action,label)
+{
+    window.sasD360DataLayer = window.sasD360DataLayer || [];
+    window.sasD360DataLayer.push({
+        'event':'interaction',
+        'interaction.category':category,
+        'interaction.action':action,
+        'interaction.label':label
+    });
+}
+
+function headerTracker(){
+
+    //on burger menu click/expand
+    var toggleBurgerMenuClick = false;
+    var toggleProfileClick = false;
+    var toggleMarketSelectorClick = false;    
+    $('#burger-menu').on("click",function(event){
+        toggleBurgerMenuClick = !toggleBurgerMenuClick;
+        if(toggleBurgerMenuClick){
+            toggleMarketSelectorClick = false;
+            toggleProfileClick = false;
+            if(screen.width < 480){
+                GTMtrackInteraction('Header','Main navigation','Expand mobile menu');
+            } else {
+                GTMtrackInteraction('Header','Main navigation','Expand desktop menu');
+            }
+        }
+    });
+
+    //on logo click
+    $('.sas-logo a').on("click",function(event){
+        GTMtrackInteraction('Header','Main navigation','Select Logo');
+    });
+
+    //on user profile click
+    $('#customer-profile a').on("click",function(event){
+        toggleProfileClick=!toggleProfileClick;
+        if(toggleProfileClick){
+            toggleMarketSelectorClick = false;
+            toggleBurgerMenuClick = false;
+            GTMtrackInteraction('Header','Panels','Show profile panel');
+        }
+    });
+
+    //on langauge/country icon click
+    $('#market-selector a').on("click",function(event){
+        toggleMarketSelectorClick = !toggleMarketSelectorClick;
+        if(toggleMarketSelectorClick){
+            toggleProfileClick = false;
+            toggleBurgerMenuClick = false;
+            GTMtrackInteraction('Header','Panels','Show language panel');
+        }
+    });
+
+    //on check in click //on my bookings click
+    var anchorList = $('#header-primary-nav').find('a');    
+    //for Check-in link
+    $(anchorList[2]).on("click",function(event){
+        GTMtrackInteraction('Header','Panels','Show check in panel');
+    });
+
+    //for my-bookings link
+    $(anchorList[3]).on("click",function(event){
+        GTMtrackInteraction('Header','Panels','Show my trips panel');
+    });
+}
+
+//banners related GTM tracking
+function bannerTracker(){
+
+    var bannerSelectors=['.small-banner', '.medium-banner', '.large-banner', '.small-large'];
+    var elems = {};
+    var sortedElements = [];
+    var promotions = [];
+
+    bannerSelectors.forEach(function(selector){
+        var elemList = $(selector);
+        Object.keys(elemList).forEach(function(index){
+            if(parseInt(index) || parseInt(index) === 0){
+                var tempElem = elemList[index];
+                if(tempElem){
+                    if(tempElem.offsetHeight === 0){
+                        tempElem = $(tempElem).find('.inner')[0];
+                    }
+
+                    if(!elems[tempElem.offsetTop]){
+                        elems[tempElem.offsetTop] = {};
+                    }
+                    elems[tempElem.offsetTop][tempElem.offsetLeft] = elemList[index];
+                }
+            }
+        });
+    });
+
+    var temp = Object.keys(elems)
+    var sortedKeys = temp.map(function(val){
+        return parseInt(val);
+    });
+
+    sortedKeys.forEach(function(index) {
+        var childObj = elems[index];
+
+        var temp = Object.keys(childObj)
+        var sortedChildKeys = temp.map(function(val){
+            return parseInt(val);
+        });
+
+        sortedChildKeys.forEach(function(childIndex) {
+            var obj = {};
+            var title = $(childObj[childIndex]).find("h2,h3,h4").first().text();
+            if("undefined"===typeof title || 1>title.length){
+                title = "no text";
+            }
+
+            obj['campaignPropositionId'] = '';
+            obj['campaignAssetId'] = '';
+
+            obj['title'] = title;
+            obj['elem'] = childObj[childIndex];
+            var className = obj['elem'].className;
+            if(className.indexOf('small-banner') >= 0){
+                obj['size'] = 'small';
+            } else if(className.indexOf('large-banner') >= 0){
+                obj['size'] = 'large';
+            } else if(className.indexOf('medium-banner') >= 0){
+                obj['size'] = 'medium';
+            } else if(className.indexOf('small-large') >= 0){
+                obj['size'] = 'large';
+            }
+
+            obj['position'] = sortedElements.length + 1;
+
+            var bannerName = "";
+            if ($(obj['elem']).find('.inner').length > 0 ){
+                bannerName = $(obj['elem']).find('.inner').attr('data-banner-name');
+                bannerName = bannerName || "";
+            }
+
+            var href = "";
+            if ($(obj['elem']).find('.multiple-destination-campaign').length > 0 || $(obj['elem']).find('.hero-campaign').length > 0 || $(obj['elem']).find('.single-destination-campaign').length > 0){
+                href = window.location.origin + window.location.pathname + 'lowpricecalendar/';
+                var tempElem = $(obj['elem']).find('[onclick]');
+                for(var x=0; x<tempElem.length; x++){
+                    $(tempElem[x]).on('click', onBannerClickCapture(obj));
+                }
+            } else if($(obj['elem']).find('.offer-medium').length > 0 || $(obj['elem']).find('.offer-small').length > 0){
+                href = window.location.origin + window.location.pathname + 'lowpricecalendar/';
+                $(obj['elem']).find('.btn').on('click', onBannerClickCapture(obj));
+                $(obj['elem']).find('a').on('click', onBannerClickCapture(obj));
+            } else if($(obj['elem']).find('.reservation-view').length > 0 ){
+                href = $(obj['elem']).find('.btn').attr('data-url');
+                $(obj['elem']).find('.btn').on('click', onBannerClickCapture(obj));
+            } else if($(obj['elem']).find('.reservation-small-view').length > 0){
+                href = $(obj['elem']).find('a')[0].href;
+                $(obj['elem']).find('a').on('click', onBannerClickCapture(obj));
+            } else if($(obj['elem']).attr('data-maxoffer') && $(obj['elem']).attr('data-maxoffer') > 1){
+                var tempElem = $(obj['elem']).find('li');
+                for(x=0; x<tempElem.length; x++){
+                    if(!tempElem[x].className){
+                        $(tempElem[x]).on('click', onBannerClickCapture(obj));
+                    }
+                }
+                $(obj['elem']).find('a').on('click', onBannerClickCapture(obj));
+            } else if($(obj['elem']).find('a').length > 0){
+                href = $(obj['elem']).find('a')[0].href;
+                $(obj['elem']).find('a').on('click', onBannerClickCapture(obj));
+            }
+
+            if(href === "#" || href === "" || href === "#."){
+                href = window.location.origin + window.location.pathname;
+            }
+            if(href.indexOf('#') > 0){
+                href = href.substring(0, href.indexOf('#'));
+            }
+
+            obj['href'] = href;
+            obj['manualName'] = bannerName;
+
+            obj['propositionId'] = $(obj['elem']).attr('data-propositionId') || $(obj['elem']).find('.inner').attr('data-propositionId') || '';
+            obj['assetId'] = $(obj['elem']).attr('data-assetId') || $(obj['elem']).find('.inner').attr('data-assetId') || '';            
+            sortedElements.push(obj);
+
+            var promoObj = {};
+            promoObj['id'] = obj.href;
+            promoObj['name'] = obj.title;
+            promoObj['manualName'] = obj.manualName;
+            promoObj['size'] = obj.size;
+            promoObj['position'] = obj.position;
+            promoObj['campaignPropositionId'] = obj.propositionId;
+            promoObj['campaignAssetId'] = obj.assetId;
+            promotions.push(promoObj);
+        });
+    });
+
+    window.sasD360DataLayer = window.sasD360DataLayer || [];
+    window.sasD360DataLayer.push({
+        'event': 'promoView',
+        'promotions': promotions
+    });
+
+}
+
+function onBannerClickCapture(obj){
+    return function(){
+        window.sasD360DataLayer = window.sasD360DataLayer || [];
+        window.sasD360DataLayer.push({
+            'event': 'promoClick',
+            'promotionClick.id': obj.href,
+            'promotionClick.name': obj.title,
+            'promotionClick.manualName': obj.manualName,
+            'promotionClick.size': obj.size,
+            'promotionClick.position': obj.position,
+            'promotionClick.campaignPropositionId':obj.propositionId,
+            'promotionClick.campaignAssetId':obj.assetId
+        });
+    }
+}
+
+var bkColor;
+var align;
+
+
+function loadButton(){
+
+	 $(".btn.primary, .btn.secondary").each(function() {
+
+         bkColor = $(this).attr("data-bgcolor");
+         $(this).addClass(bkColor);
+
+		align = $(this).attr("data-align");
+
+		$(this).parent().css({'text-align': align});
+
+     if($(this).attr("data-gtm-category") && $(this).attr("data-gtm-action") && $(this).attr("data-gtm-label")){
+         $(this).on('click', function(event){
+             GTMtrackInteraction($(this).attr("data-gtm-category"), $(this).attr("data-gtm-action"), $(this).attr("data-gtm-label"));
+         });
+     }
+
+ });
+
+
+
+}
+
+$(document).ready(function() {
+
+	loadButton();
+
+
+});
+
+function GTMtrackInteraction(category,action,label)
+{
+	window.sasD360DataLayer = window.sasD360DataLayer || []; // to make sure the array exists
+	window.sasD360DataLayer.push({
+		'event':'interaction',
+		'interaction.category':category,
+		'interaction.action':action,
+		'interaction.label':label
+	});
+}
+
